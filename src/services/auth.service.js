@@ -24,10 +24,16 @@ const authService = {
   updateAvatar: (file) => {
     const formData = new FormData();
     formData.append('avatar', file);
-    return axiosInstance.put('/auth/me', formData, {
+    return axiosInstance.post('/auth/me/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+
+  changePassword: (currentPassword, newPassword) =>
+    axiosInstance.post('/auth/me/password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
 };
 
 export default authService;

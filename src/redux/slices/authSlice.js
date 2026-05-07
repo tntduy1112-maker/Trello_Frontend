@@ -83,6 +83,30 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authService.updateProfile(data);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || { message: 'Update failed' });
+    }
+  }
+);
+
+export const uploadAvatar = createAsyncThunk(
+  'auth/uploadAvatar',
+  async (file, { rejectWithValue }) => {
+    try {
+      const response = await authService.updateAvatar(file);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || { message: 'Upload failed' });
+    }
+  }
+);
+
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async ({ token, password }, { rejectWithValue }) => {
@@ -155,6 +179,12 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+      .addCase(uploadAvatar.fulfilled, (state, action) => {
+        state.user = action.payload;
       });
   },
 });
