@@ -175,6 +175,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
+        localStorage.removeItem('accessToken');
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
