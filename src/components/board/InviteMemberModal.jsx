@@ -27,10 +27,24 @@ export default function InviteMemberModal({ boardId, onClose }) {
   };
 
   const handleCopyLink = async () => {
-    if (invitation?.invite_url) {
-      await navigator.clipboard.writeText(invitation.invite_url);
+    if (!invitation?.invite_url) return;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(invitation.invite_url);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = invitation.invite_url;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
     }
   };
 
