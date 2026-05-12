@@ -51,13 +51,15 @@ function PublicRoute({ children }) {
 
 function App() {
   const dispatch = useDispatch();
-  const token = localStorage.getItem('accessToken');
 
   useEffect(() => {
+    const token = localStorage.getItem('accessToken');
     if (token) {
-      dispatch(getCurrentUser());
+      dispatch(getCurrentUser()).unwrap().catch(() => {
+        localStorage.removeItem('accessToken');
+      });
     }
-  }, [dispatch, token]);
+  }, [dispatch]);
 
   return (
     <BrowserRouter>
