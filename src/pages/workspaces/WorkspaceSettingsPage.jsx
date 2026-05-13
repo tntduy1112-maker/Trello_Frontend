@@ -221,7 +221,7 @@ export default function WorkspaceSettingsPage() {
                   <div className="flex-1 min-w-0">
                     {/* Row 1: name + (you) + owner badge */}
                     <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                      <span className="font-medium text-gray-900 truncate">
+                      <span className="font-medium text-gray-900">
                         {member.user?.full_name || 'Unknown'}
                       </span>
                       {isCurrentUser && (
@@ -235,7 +235,7 @@ export default function WorkspaceSettingsPage() {
                       )}
                     </div>
                     {/* Row 2: email */}
-                    <p className="text-xs text-gray-500 truncate mb-2">
+                    <p className="text-xs text-gray-500 mb-2 break-all">
                       {member.user?.email}
                     </p>
                     <div className="flex flex-wrap gap-2">
