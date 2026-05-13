@@ -21,7 +21,7 @@ export default function AddListForm({ boardId }) {
     return (
       <button
         onClick={() => setIsAdding(true)}
-        className="flex items-center gap-2 bg-white/30 hover:bg-white/40 rounded-xl p-3 w-72 flex-shrink-0 text-white font-medium transition-colors"
+        className="flex items-center gap-2 bg-white/30 hover:bg-white/40 rounded-xl p-3 w-64 md:w-72 flex-shrink-0 text-white font-medium transition-colors"
       >
         <Plus size={20} />
         Add another list
@@ -32,7 +32,7 @@ export default function AddListForm({ boardId }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-100 rounded-xl p-3 w-72 flex-shrink-0"
+      className="bg-gray-100 rounded-xl p-3 w-64 md:w-72 flex-shrink-0"
     >
       <input
         type="text"

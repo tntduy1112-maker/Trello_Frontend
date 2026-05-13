@@ -207,18 +207,18 @@ export default function BoardPage() {
 
   return (
     <div
-      className="min-h-[calc(100vh-48px)] -m-6 p-6"
+      className="min-h-[calc(100vh-48px)] -m-4 md:-m-6 p-4 md:p-6"
       style={{ backgroundColor: currentBoard?.background_color || '#0079bf' }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-white">{currentBoard?.title || 'Board'}</h1>
+      <div className="flex items-center justify-between mb-4 gap-2">
+        <h1 className="text-lg md:text-2xl font-bold text-white truncate">{currentBoard?.title || 'Board'}</h1>
         {canManage && (
           <button
             onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex-shrink-0"
           >
             <UserPlus className="w-4 h-4" />
-            Invite
+            <span className="hidden sm:inline">Invite</span>
           </button>
         )}
       </div>
@@ -230,7 +230,7 @@ export default function BoardPage() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4 items-start">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 items-start">
           <SortableContext items={lists.filter((l) => l.id).map((l) => l.id)} strategy={horizontalListSortingStrategy}>
             {lists.filter((list) => list.id).map((list) => (
               <BoardList key={list.id} list={list} cards={list.cards || []} canEdit={canEdit} canManage={canManage} />

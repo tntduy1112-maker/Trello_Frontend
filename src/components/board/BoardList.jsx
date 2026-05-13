@@ -60,7 +60,7 @@ export default function BoardList({ list, cards = [], canEdit = true, canManage 
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-gray-100 rounded-xl w-72 flex-shrink-0 flex flex-col max-h-[calc(100vh-140px)]"
+      className="bg-gray-100 rounded-xl w-64 md:w-72 flex-shrink-0 flex flex-col max-h-[calc(100vh-140px)]"
     >
       <div
         {...attributes}
