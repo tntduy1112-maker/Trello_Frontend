@@ -203,8 +203,8 @@ export default function WorkspaceSettingsPage() {
             const isMemberOwner = member.user?.id === workspace?.owner?.id;
 
             return (
-              <div key={member.user?.id} className="px-6 py-4">
-                <div className="flex items-start gap-4">
+              <div key={member.user?.id} className="px-4 md:px-6 py-4">
+                <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                     {member.user?.avatar_url ? (
                       <img
@@ -219,21 +219,25 @@ export default function WorkspaceSettingsPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium text-gray-900">
+                    {/* Row 1: name + (you) + owner badge */}
+                    <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                      <span className="font-medium text-gray-900 truncate">
                         {member.user?.full_name || 'Unknown'}
                       </span>
                       {isCurrentUser && (
-                        <span className="text-xs text-gray-500">(you)</span>
+                        <span className="text-xs text-gray-400">(you)</span>
                       )}
                       {isMemberOwner && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
                           <Crown className="w-3 h-3" />
-                          Workspace Creator
+                          Creator
                         </span>
                       )}
-                      <span className="text-sm text-gray-500">{member.user?.email}</span>
                     </div>
+                    {/* Row 2: email */}
+                    <p className="text-xs text-gray-500 truncate mb-2">
+                      {member.user?.email}
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {member.boards?.map((board) => {
                         const dropdownId = `${member.user?.id}-${board.id}`;
