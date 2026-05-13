@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Kanban, Bell, Search, Plus, User, LogOut, Settings, ChevronDown, HelpCircle } from 'lucide-react';
+import { Kanban, Bell, Search, Plus, User, LogOut, Settings, ChevronDown, HelpCircle, Menu } from 'lucide-react';
 import { logout } from '../../redux/slices/authSlice';
 import NotificationDropdown from '../ui/NotificationDropdown';
 import HelpModal from '../ui/HelpModal';
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -41,13 +41,20 @@ export default function Navbar() {
   return (
     <nav className="bg-trello-blue h-12 flex items-center px-4 justify-between">
       {/* Left section */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-2 text-white hover:bg-white/20 rounded"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
         <Link to="/home" className="flex items-center gap-2 text-white font-bold text-lg">
           <Kanban className="w-6 h-6" />
           <span className="hidden sm:inline">TaskFlow</span>
         </Link>
 
-        <button className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded text-sm">
+        <button className="hidden sm:flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded text-sm">
           <Plus className="w-4 h-4" />
           <span>Create</span>
         </button>

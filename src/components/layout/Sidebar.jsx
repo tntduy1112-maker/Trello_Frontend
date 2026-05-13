@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ChevronDown, ChevronRight, Plus, LayoutGrid, Settings, Users } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, LayoutGrid, Settings, X } from 'lucide-react';
 import { fetchWorkspaces } from '../../redux/slices/workspaceSlice';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const { slug } = useParams();
@@ -30,7 +30,18 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-48px)] p-4">
+    <aside className={`
+      fixed md:static inset-y-0 left-0 z-30
+      w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-48px)] p-4
+      transform transition-transform duration-200 ease-in-out
+      ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+    `}>
+      <div className="flex items-center justify-between mb-6 md:block">
+        <span className="text-sm font-semibold text-gray-700 md:hidden">Menu</span>
+        <button onClick={onClose} className="md:hidden p-1 rounded hover:bg-gray-100">
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
       <div className="mb-6">
         <Link
           to="/workspaces/create"
