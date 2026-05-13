@@ -4,7 +4,7 @@ import authService from '../../services/auth.service';
 const initialState = {
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: !!localStorage.getItem('accessToken'),
   error: null,
 };
 
