@@ -243,15 +243,15 @@ export default function LandingPage() {
 
           {/* Hypothesis card */}
           <div className="bg-white/[0.06] border border-white/10 rounded-lg p-8 mb-0">
-            <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col gap-4">
               {[
                 { label: 'We believe', text: <>a curated suite of <strong className="text-white font-semibold">AI-built products</strong> under a single brand</> },
                 { label: 'For', text: <>teams who need <strong className="text-white font-semibold">lightweight, purpose-built tools</strong> without enterprise complexity</> },
                 { label: 'Will result in', text: <>proof that <strong className="text-white font-semibold">AI-assisted engineering</strong> can produce real, production-quality software at speed</> },
                 { label: "We'll know when", text: <>each product <strong className="text-white font-semibold">ships to production</strong>, acquires real users, and passes the same quality gates — built in weeks, not months</> },
               ].map(({ label, text }) => (
-                <div key={label} className="flex gap-3 text-[15px] leading-[1.55] sm:flex-row flex-col">
-                  <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-trello-blue-light whitespace-nowrap pt-0.5 min-w-[110px]">
+                <div key={label} className="flex flex-col sm:flex-row sm:gap-6 gap-1 text-[15px] leading-[1.55]">
+                  <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-trello-blue-light whitespace-nowrap pt-0.5 sm:min-w-[130px] sm:text-right">
                     {label}
                   </span>
                   <span className="text-white/80">{text}</span>
@@ -271,7 +271,7 @@ export default function LandingPage() {
                 { value: '1', label: 'Product in production', status: 'achieved', statusText: 'Achieved' },
                 { value: '~6 wks', label: 'Zero to production', status: 'achieved', statusText: 'Achieved' },
                 { value: '100%', label: 'AI-assisted build', status: 'achieved', statusText: 'Validated' },
-                { value: '—', label: 'Real users onboarded', status: 'in-progress', statusText: 'In progress' },
+                { value: '0→?', label: 'Real users onboarded', status: 'in-progress', statusText: 'In progress' },
               ].map(({ value, label, status, statusText }) => (
                 <div key={label} className="relative bg-white/5 border border-white/[0.09] rounded-md overflow-hidden">
                   <div
@@ -285,7 +285,7 @@ export default function LandingPage() {
                     className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                       status === 'achieved'
                         ? 'bg-green-400/15 text-green-300'
-                        : 'bg-trello-blue/20 text-trello-blue-light'
+                        : 'bg-trello-blue/30 text-[#85B8FF]'
                     }`}
                   >
                     <span
