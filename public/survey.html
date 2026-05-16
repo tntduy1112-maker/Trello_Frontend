@@ -907,9 +907,9 @@ function renderSummary() {
   card.className = 'card';
   card.innerHTML = `
     <div class="summary-hero">
-      <div class="summary-icon">✅</div>
-      <div class="summary-title">Your product brief is ready</div>
-      <div class="summary-subtitle">Copy the brief below and paste it into a new Claude Code session to start building.</div>
+      <div class="summary-icon">🚀</div>
+      <div class="summary-title">Your Product Investment Brief is ready</div>
+      <div class="summary-subtitle">Copy below and paste into Claude Code to start the full build pipeline.</div>
     </div>
 
     <div class="output-block" id="output-text">${escHtml(output)}</div>
@@ -919,14 +919,19 @@ function renderSummary() {
     </div>
 
     <div class="instructions-box">
-      <h3>How to use this brief with Claude</h3>
+      <h3>Full pipeline — paste the brief then run each command:</h3>
       <ol>
-        <li>Open <strong>Claude Code</strong> (terminal or claude.ai/code) in a new session.</li>
-        <li>Paste the entire brief above into the chat.</li>
-        ${hasUploads() ? '<li>Also attach any uploaded files to the same message.</li>' : ''}
-        <li>Send this message:<br/><code>"Act as Head of Product. Using this intake brief, create a business case. Where information is missing, state your assumption and mark it [ASSUMPTION]. Then ask if I want to proceed to /spec."</code></li>
-        <li>Review the business case. Say <code>GO</code> to continue to product spec, or give corrections.</li>
+        <li><code>/business-case</code> — Head of Product creates Five Case Model business case</li>
+        <li><code>/spec</code> — Project Manager writes PRD with 5 visual diagrams + hypothesis</li>
+        <li><code>/stories</code> — Product Owner breaks spec into user stories with step-by-step AC</li>
+        <li><code>/plan</code> — Vertical slice breakdown (Foundation → Core → Polish)</li>
+        <li><code>/build</code> — TDD implementation (RED-GREEN-REFACTOR)</li>
+        <li><code>/test</code> — Tests + manual browser verification</li>
+        <li><code>/review</code> — Five-axis code review before merge</li>
+        <li><code>/deploy</code> — rc tag → dev smoke test → promote → production</li>
+        <li><code>/transition</code> — DoD checklist, sustainment plan, stakeholder sign-off</li>
       </ol>
+      <p style="margin-top:12px;font-size:13px;color:#505258;">Say <strong>GO</strong> after each step to advance. Head of Product can STOP at any point if the business case becomes invalid.</p>
     </div>
 
     <div class="restart-wrap">
@@ -964,159 +969,259 @@ function generateSummary() {
   let gaps = [];
   let out = '';
 
-  out += `=== PRODUCT INTAKE BRIEF FOR CLAUDE ===\n`;
-  out += `Generated: ${date}\n`;
-  out += `Detail level provided: ${level === 'rough' ? 'Rough idea' : level === 'some' ? 'Some detail' : 'Detailed requirements'}\n`;
-  out += `\n${'─'.repeat(50)}\n\n`;
+  // ── Data extraction ──────────────────────────────────────────────────────
 
-  // App identity
   const appName = getTextField('app_identity', 'app_name');
   const similar  = getTextField('app_identity', 'similar_app');
   const appDesc  = getTextField('app_identity', 'app_description') || getOther('app_identity');
-  out += `APP IDENTITY\n`;
-  out += `Name: ${appName || '[ASSUMPTION: to be named]'}\n`;
-  if (!appName) gaps.push('App name');
-  if (similar)  out += `Reference: ${similar}\n`;
-  if (appDesc)  out += `Description: ${appDesc}\n`;
-  out += '\n';
 
-  // App type
   const typeMap = { web: 'Web app (browser)', mobile: 'Mobile app (iOS/Android)', both: 'Web + Mobile', internal: 'Internal team tool' };
   const appType = getAnswer('app_type');
-  out += `APP TYPE\n${appType ? (typeMap[appType] || appType) : '[ASSUMPTION: Web app]'}\n`;
-  if (!appType) gaps.push('App type');
-  if (getOther('app_type')) out += `Note: ${getOther('app_type')}\n`;
-  out += '\n';
 
-  // Target users
   const userMap = { consumers: 'General public (B2C)', businesses: 'Businesses (B2B)', internal: 'Internal team only', marketplace: 'Two-sided marketplace' };
   const users = getAnswers('target_users').filter(v => v !== '__other__');
-  out += `TARGET USERS\n`;
-  if (users.length) { users.forEach(v => out += `- ${userMap[v] || v}\n`); }
-  else { out += `- [ASSUMPTION: General public / consumers]\n`; gaps.push('Target users'); }
-  if (getOther('target_users')) out += `- Other: ${getOther('target_users')}\n`;
-  out += '\n';
+  const userOther = getOther('target_users');
 
-  // Problem
   const probMap = { saves_time: 'Saves time on a repetitive task', connects: 'Connects people who need each other', replaces_manual: 'Replaces a paper / manual process', affordable: 'Makes something expensive more accessible', track: 'Helps people track or manage information' };
   const probs = getAnswers('problem').filter(v => v !== '__other__');
-  out += `PROBLEM BEING SOLVED\n`;
-  if (probs.length) { probs.forEach(v => out += `- ${probMap[v] || v}\n`); }
-  else { out += `- [ASSUMPTION: general productivity or task management]\n`; gaps.push('Problem being solved'); }
-  if (getOther('problem')) out += `- Other: ${getOther('problem')}\n`;
-  out += '\n';
+  const probOther = getOther('problem');
 
-  // Current solution
   const solMap = { spreadsheets: 'Spreadsheets / manual documents', nothing: 'No good solution currently exists', competitor: 'A competitor product', cobbled: 'Multiple tools stitched together', manual: 'Done manually or physically' };
   const sol = getAnswer('current_solution');
-  out += `CURRENT SOLUTION\n${sol ? (solMap[sol] || sol) : '[ASSUMPTION: using spreadsheets or manual process]'}\n`;
-  if (!sol) gaps.push('Current solution');
-  if (getOther('current_solution')) out += `Note: ${getOther('current_solution')}\n`;
-  out += '\n';
 
-  // Core action
   const actionMap = { search: 'Search and find something', book: 'Book or schedule something', buy_sell: 'Buy or sell something', create: 'Create and manage content', communicate: 'Connect and communicate', track: 'Track and monitor something' };
   const action = getAnswer('core_action');
-  out += `CORE USER ACTION\n${action ? (actionMap[action] || action) : '[ASSUMPTION: manage and track information]'}\n`;
-  if (!action) gaps.push('Core user action');
-  if (getOther('core_action')) out += `Note: ${getOther('core_action')}\n`;
-  out += '\n';
 
-  // Key screens (if answered)
   const screenMap = { login: 'Login / Register', dashboard: 'Home / Dashboard', search: 'Search / Browse / Explore', profile: 'Profile / Account settings', messaging: 'Messaging / Chat', booking: 'Booking / Scheduling / Calendar', payment: 'Payment / Checkout', admin: 'Admin panel', notifications: 'Notifications feed', reporting: 'Reports / Analytics' };
   const screens = getAnswers('key_screens').filter(v => v !== '__other__');
-  if (screens.length) {
-    out += `KEY SCREENS\n`;
-    screens.forEach(v => out += `- ${screenMap[v] || v}\n`);
-    if (getOther('key_screens')) out += `- Other: ${getOther('key_screens')}\n`;
-    out += '\n';
-  }
 
-  // Must-have features (if answered)
   const featMap = { auth: 'User login and registration', search_filter: 'Search and filtering', notifications: 'Email or push notifications', payments: 'Payment processing (Stripe)', file_upload: 'File / image uploads', chat: 'Chat or messaging', admin_panel: 'Admin panel', analytics: 'Reporting / analytics dashboard', integrations: 'Third-party integrations' };
   const feats = getAnswers('must_have_features').filter(v => v !== '__other__');
-  if (feats.length) {
-    out += `MUST-HAVE FEATURES (MVP)\n`;
-    feats.forEach(v => out += `- ${featMap[v] || v}\n`);
-    if (getOther('must_have_features')) out += `- Other: ${getOther('must_have_features')}\n`;
-    out += '\n';
-  }
 
-  // Look & feel (if answered)
   const lookMap = { minimal: 'Clean and minimal (like Notion, Linear)', professional: 'Professional and corporate (like Salesforce, Monday)', colorful: 'Colorful and approachable (like Duolingo, Canva)', dark: 'Dark mode / developer style (like GitHub, Vercel)', marketplace: 'Marketplace / consumer style (like Airbnb, Etsy)' };
   const looks = getAnswers('look_feel').filter(v => v !== '__other__');
-  if (looks.length) {
-    out += `LOOK & FEEL\n`;
-    looks.forEach(v => out += `- ${lookMap[v] || v}\n`);
-    if (getOther('look_feel')) out += `- Other: ${getOther('look_feel')}\n`;
-    out += '\n';
-  }
 
-  // Existing docs (if answered)
-  const docMap = { wireframes: 'Wireframes / mockups (uploaded)', spec: 'Written spec / requirements (uploaded)', screenshots: 'Competitor screenshots (uploaded)', brand: 'Logo / brand guidelines (uploaded)', none: 'Starting from scratch — no documents' };
-  const docs = getAnswers('existing_docs').filter(v => v !== '__other__');
-  if (docs.length) {
-    out += `EXISTING DOCUMENTS\n`;
-    docs.forEach(v => out += `- ${docMap[v] || v}\n`);
-    if (getOther('existing_docs')) out += `- Other: ${getOther('existing_docs')}\n`;
-    // List uploaded files
-    const allUploaded = [];
-    Object.keys(uploadedFiles).forEach(k => uploadedFiles[k].forEach(f => allUploaded.push(f.name)));
-    if (allUploaded.length) {
-      out += `Uploaded files:\n`;
-      allUploaded.forEach(n => out += `  - ${n}\n`);
-    }
-    out += '\n';
-  }
-
-  // Success metric
   const metricMap = { users: 'Number of users who sign up', revenue: 'Revenue generated', tasks: 'Number of tasks / bookings completed', validation: 'Idea validated (real users tried it)', retention: 'Users keep coming back (retention / DAU)' };
   const metric = getAnswer('success_metric');
-  out += `SUCCESS METRIC (6 months)\n${metric ? (metricMap[metric] || metric) : '[ASSUMPTION: user sign-ups and active engagement]'}\n`;
-  if (!metric) gaps.push('Success metric');
-  if (getOther('success_metric')) out += `Note: ${getOther('success_metric')}\n`;
-  out += '\n';
 
-  // Timeline
   const timeMap = { '2weeks': '1-2 weeks (Micro-MVP)', '1month': '1 month (Small MVP)', '3months': '2-3 months (Solid MVP)', '6months': '6 months+ (Full product)', 'flexible': 'No strict deadline' };
   const time = getAnswer('timeline');
-  out += `TIMELINE\n${time ? (timeMap[time] || time) : '[ASSUMPTION: 1-2 months]'}\n`;
-  if (!time) gaps.push('Timeline');
-  if (getOther('timeline')) out += `Note: ${getOther('timeline')}\n`;
-  out += '\n';
 
-  // Budget
   const budgetMap = { free: 'Free / under $20/month (use free tiers)', small: '$20-$100/month', medium: '$100-$500/month', large: '$500+/month', unsure: 'Not specified — Claude to recommend' };
   const budget = getAnswer('budget');
-  out += `MONTHLY INFRASTRUCTURE BUDGET\n${budget ? (budgetMap[budget] || budget) : '[ASSUMPTION: free / low-cost tiers]'}\n`;
-  if (!budget) gaps.push('Budget');
-  if (getOther('budget')) out += `Note: ${getOther('budget')}\n`;
+
+  const extra = getAnswer('anything_else');
+
+  // Collect uploaded files
+  const allUploaded = [];
+  Object.keys(uploadedFiles).forEach(k => uploadedFiles[k].forEach(f => allUploaded.push(f.name)));
+
+  // Build user labels list (for hypothesis)
+  const userLabels = [];
+  users.forEach(v => userLabels.push(userMap[v] || v));
+  if (userOther) userLabels.push(userOther);
+
+  // Build problem labels list (for hypothesis)
+  const probLabels = [];
+  probs.forEach(v => probLabels.push(probMap[v] || v));
+  if (probOther) probLabels.push(probOther);
+
+  // ── Header ───────────────────────────────────────────────────────────────
+
+  out += `╔══════════════════════════════════════════════════╗\n`;
+  out += `║     PRODUCTCON LAB - PRODUCT INVESTMENT BRIEF    ║\n`;
+  out += `╚══════════════════════════════════════════════════╝\n`;
+  out += `Generated: ${date}  |  Detail level: ${level === 'rough' ? 'Rough idea' : level === 'some' ? 'Some detail' : 'Detailed requirements'}\n`;
+
+  // ── PRODUCT VISION ───────────────────────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} PRODUCT VISION ${'━'.repeat(33)}\n\n`;
+  if (!appName) gaps.push('App name');
+  out += `Product name    : ${appName || '[ASSUMPTION: to be named]'}\n`;
+  if (similar) out += `Reference app   : ${similar}\n`;
+  out += `Vision          : ${appDesc || '[ASSUMPTION: general productivity tool]'}\n`;
+
+  // ── PRODUCT PROFILE ──────────────────────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} PRODUCT PROFILE ${'━'.repeat(32)}\n\n`;
+
+  if (!appType) gaps.push('App type');
+  out += `Platform        : ${appType ? (typeMap[appType] || appType) : '[ASSUMPTION: Web app]'}\n`;
+  if (getOther('app_type')) out += `                  Note: ${getOther('app_type')}\n`;
+
+  out += `Target users    :\n`;
+  if (userLabels.length) {
+    userLabels.forEach(u => out += `  - ${u}\n`);
+  } else {
+    out += `  - [ASSUMPTION: General public / consumers]\n`;
+    gaps.push('Target users');
+  }
+
+  if (!action) gaps.push('Core user action');
+  out += `Core job-to-do  : ${action ? (actionMap[action] || action) : '[ASSUMPTION: manage and track information]'}\n`;
+  if (getOther('core_action')) out += `                  Note: ${getOther('core_action')}\n`;
+
+  if (!sol) gaps.push('Current workaround');
+  out += `Current workaround : ${sol ? (solMap[sol] || sol) : '[ASSUMPTION: spreadsheets or manual process]'}\n`;
+  if (getOther('current_solution')) out += `                  Note: ${getOther('current_solution')}\n`;
+
+  out += `Problems solved :\n`;
+  if (probLabels.length) {
+    probLabels.forEach(p => out += `  - ${p}\n`);
+  } else {
+    out += `  - [ASSUMPTION: general productivity or task management]\n`;
+    gaps.push('Problems being solved');
+  }
+
+  // ── MVP SCOPE ────────────────────────────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} MVP SCOPE ${'━'.repeat(38)}\n\n`;
+
+  out += `Must-have features (day 1 only):\n`;
+  if (feats.length) {
+    feats.forEach(v => out += `  - ${featMap[v] || v}\n`);
+    if (getOther('must_have_features')) out += `  - ${getOther('must_have_features')}\n`;
+  } else {
+    out += `  - [ASSUMPTION: user auth, core CRUD, basic notifications]\n`;
+  }
+
+  if (screens.length) {
+    out += `Key screens:\n`;
+    screens.forEach(v => out += `  - ${screenMap[v] || v}\n`);
+    if (getOther('key_screens')) out += `  - ${getOther('key_screens')}\n`;
+  }
+
+  if (looks.length) {
+    out += `Look & feel:\n`;
+    looks.forEach(v => out += `  - ${lookMap[v] || v}\n`);
+    if (getOther('look_feel')) out += `  - ${getOther('look_feel')}\n`;
+  }
+
+  // ── INVESTMENT PARAMETERS ────────────────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} INVESTMENT PARAMETERS ${'━'.repeat(26)}\n\n`;
+
+  if (!time) gaps.push('Timeline');
+  out += `Timeline              : ${time ? (timeMap[time] || time) : '[ASSUMPTION: 1-2 months]'}\n`;
+  if (getOther('timeline')) out += `                        Note: ${getOther('timeline')}\n`;
+
+  if (!budget) gaps.push('Monthly infra budget');
+  out += `Monthly infra budget  : ${budget ? (budgetMap[budget] || budget) : '[ASSUMPTION: free / low-cost tiers]'}\n`;
+  if (getOther('budget')) out += `                        Note: ${getOther('budget')}\n`;
+
+  if (!metric) gaps.push('Success metric');
+  out += `Primary success metric: ${metric ? (metricMap[metric] || metric) : '[ASSUMPTION: user sign-ups and active engagement]'} - measured at 6 months\n`;
+  if (getOther('success_metric')) out += `                        Note: ${getOther('success_metric')}\n`;
+
+  // ── DRAFT HYPOTHESIS ─────────────────────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} DRAFT HYPOTHESIS (for Head of Product to refine) ${'━'.repeat(1)}\n\n`;
+
+  const believeThat = appName
+    ? `${appName}${action ? ' — ' + (actionMap[action] || action) : ''}`
+    : (action ? (actionMap[action] || action) : '[ASSUMPTION: this product]');
+  const forUsers = userLabels.length
+    ? userLabels.join(', ')
+    : '[ASSUMPTION: general consumers]';
+  const willResult = probLabels.length
+    ? probLabels.map(p => p.charAt(0).toLowerCase() + p.slice(1)).join('; ')
+    : '[ASSUMPTION: improved productivity and reduced manual effort]';
+  const weKnowWhen = metric
+    ? (metricMap[metric] || metric) + ' shows measurable improvement'
+    : '[ASSUMPTION: key metric shows measurable improvement]';
+
+  out += `We believe that   ${believeThat}\n`;
+  out += `For               ${forUsers}\n`;
+  out += `Will result in    ${willResult}\n`;
+  out += `We'll know when   ${weKnowWhen}\n`;
+  out += `\n[ASSUMPTION: baseline and target numbers unknown - Head of Product must research and add]\n`;
+
+  // ── CONSTRAINTS & ADDITIONAL CONTEXT ─────────────────────────────────────
+
+  out += `\n${'━'.repeat(3)} CONSTRAINTS & ADDITIONAL CONTEXT ${'━'.repeat(15)}\n\n`;
+  out += extra ? extra : '(none provided)';
   out += '\n';
 
-  // Anything else
-  const extra = getAnswer('anything_else');
-  if (extra) {
-    out += `ADDITIONAL CONTEXT\n${extra}\n\n`;
+  // ── UPLOADED DOCUMENTS ───────────────────────────────────────────────────
+
+  if (allUploaded.length) {
+    out += `\n${'━'.repeat(3)} UPLOADED DOCUMENTS ${'━'.repeat(29)}\n\n`;
+    allUploaded.forEach(n => out += `  - ${n}\n`);
   }
 
-  out += `${'─'.repeat(50)}\n\n`;
+  // ── ASSUMPTIONS TO VALIDATE ──────────────────────────────────────────────
 
+  out += `\n${'━'.repeat(3)} ASSUMPTIONS TO VALIDATE ${'━'.repeat(24)}\n\n`;
   if (gaps.length > 0) {
-    out += `MISSING INFORMATION (${gaps.length} item${gaps.length > 1 ? 's' : ''})\n`;
-    out += `The following were not answered. Claude should make reasonable assumptions and mark them clearly with [ASSUMPTION]:\n`;
-    gaps.forEach(g => out += `- ${g}\n`);
-    out += '\n';
+    gaps.forEach(g => out += `  - ${g}: [ASSUMPTION: not provided - Claude should research and state assumption explicitly]\n`);
+  } else {
+    out += '(All key fields answered)\n';
   }
 
-  out += `${'─'.repeat(50)}\n\n`;
-  out += `=== HOW TO USE THIS BRIEF ===\n\n`;
-  out += `Paste this entire document into a new Claude Code session and say:\n\n`;
-  out += `"Act as Head of Product. Using this intake brief, create a business case document (save as PLANS/BUSINESS_CASE.md). Where information is marked [ASSUMPTION], state the assumption clearly. At the end, ask if I want to proceed to /spec."\n\n`;
-  if (hasUploads()) {
-    out += `Also attach your uploaded files to the same message.\n\n`;
-  }
-  out += `After the business case is approved, the full workflow is:\n`;
-  out += `/business-case → /spec → /stories → /plan → /build → /test → /review → /deploy`;
+  // ── CLAUDE WORKFLOW GUIDE ─────────────────────────────────────────────────
+
+  out += `\n${'='.repeat(54)}\n`;
+  out += `       C L A U D E   W O R K F L O W   G U I D E\n`;
+  out += `${'='.repeat(54)}\n\n`;
+  out += `Paste this entire brief into a new Claude Code session,\n`;
+  out += `then follow these steps in order:\n`;
+
+  out += `\n--- STEP 1 -- /business-case (Head of Product) ------\n\n`;
+  out += `Say: "Run /business-case"\n\n`;
+  out += `Claude will act as Head of Product and create\n`;
+  out += `PLANS/BUSINESS_CASE.md using the Five Case Model:\n\n`;
+  out += `  STRATEGIC  Why build this? Market context, case for change,\n`;
+  out += `             strategic fit, objectives, stakeholders\n`;
+  out += `  ECONOMIC   Options: Do Nothing / Buy / Build MVP / Full Build\n`;
+  out += `             NPV, ROI, payback period, sensitivity analysis\n`;
+  out += `  COMMERCIAL Team needed, external dependencies, procurement\n`;
+  out += `  FINANCIAL  Budget breakdown, cash flow, approval required\n`;
+  out += `  MANAGEMENT Milestones, risk register, benefits realization\n\n`;
+  out += `All [ASSUMPTION] items will be called out explicitly.\n`;
+  out += `Ends with GO / NO-GO / DEFER decision.\n\n`;
+  out += `Reply "GO" to proceed to Step 2.\n`;
+
+  out += `\n--- STEP 2 -- /spec (Project Manager) ---------------\n\n`;
+  out += `Say: "Run /spec"\n\n`;
+  out += `Claude will act as Project Manager and create\n`;
+  out += `PLANS/[APP_NAME]_SPEC.md containing:\n\n`;
+  out += `  - Feature hypothesis (We believe / For / Will result in)\n`;
+  out += `  - Before/After flow diagram\n`;
+  out += `  - System architecture diagram\n`;
+  out += `  - User journey flowchart\n`;
+  out += `  - Project timeline (Gantt-style)\n`;
+  out += `  - Metrics visualization (baseline vs target)\n`;
+  out += `  - Core features list (high-level, not detailed AC)\n`;
+  out += `  - Technical approach and stack decisions\n`;
+  out += `  - Testing strategy (high-level)\n`;
+
+  out += `\n--- STEP 3 -- /stories (Product Owner) --------------\n\n`;
+  out += `Say: "Run /stories"\n\n`;
+  out += `Claude will act as Product Owner and break the spec into\n`;
+  out += `small, INVEST-compliant user stories, each with:\n\n`;
+  out += `  - Step-by-step user actions (NOT GIVEN/WHEN/THEN)\n`;
+  out += `  - Business logic in IF/THEN/ELSE format\n`;
+  out += `  - UI state specifications\n`;
+  out += `  - Out of scope explicitly listed\n`;
+  out += `  - Size estimate (XS/S/M/L/XL)\n`;
+
+  out += `\n--- STEP 4 -- /plan ---------------------------------\n\n`;
+  out += `Say: "Run /plan"\n\n`;
+  out += `Vertical slice breakdown - each slice delivers full\n`;
+  out += `functionality end-to-end (DB + API + UI together).\n`;
+  out += `Foundation -> Core -> Polish, with checkpoints.\n`;
+
+  out += `\n--- STEP 5-9 -- Build -> Ship -----------------------\n\n`;
+  out += `/build    TDD - write failing tests first, then implement\n`;
+  out += `/test     Verify tests pass; manual browser testing\n`;
+  out += `/review   Five-axis review: Correctness, Readability,\n`;
+  out += `          Architecture, Security, Performance\n`;
+  out += `/deploy   Tag rc -> dev smoke test -> promote -> prod\n`;
+  out += `/transition  DoD checklist, sustainment plan, sign-offs\n`;
+
+  out += `\n${'='.repeat(54)}\n`;
+  out += `TO START: paste this brief and type  /business-case\n`;
+  out += `${'='.repeat(54)}\n`;
 
   return out;
 }
