@@ -165,7 +165,7 @@ export default function WorkspaceSettingsPage() {
             You need to be an owner of at least one board in this workspace to manage settings.
           </p>
           <button
-            onClick={() => navigate(`/workspaces/${slug}`)}
+            onClick={() => navigate(`/app/workspaces/${slug}`)}
             className="mt-4 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
           >
             Go to Workspace

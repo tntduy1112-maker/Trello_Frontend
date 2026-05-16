@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build with Claude - Product Intake Survey</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F1F2F4;
+      color: #091E42;
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    .nav {
+      background: #FFFFFF;
+      border-bottom: 1px solid #DCDFE4;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-logo {
+      width: 32px; height: 32px;
+      background: #0C66E4;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 15px;
+      flex-shrink: 0;
+    }
+    .nav-title { font-size: 15px; font-weight: 600; color: #091E42; }
+    .nav-spacer { flex: 1; }
+    .nav-step { font-size: 13px; color: #505258; }
+
+    /* Container */
+    .container {
+      max-width: 680px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
+    }
+
+    /* Progress */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-meta {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: #505258; margin-bottom: 8px;
+    }
+    .progress-bar { height: 5px; background: #DCDFE4; border-radius: 50px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; background: #0C66E4; border-radius: 50px;
+      transition: width 0.35s ease;
+    }
+
+    /* Card */
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #DCDFE4;
+      border-radius: 6px;
+      padding: 36px 32px;
+      box-shadow: rgba(9, 30, 66, 0.13) 0px 1px 1px 0px;
+      animation: fadeUp 0.22s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Question header */
+    .q-tag {
+      display: inline-block;
+      background: #E9F2FF; color: #0C66E4;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+      padding: 3px 10px; border-radius: 50px;
+      margin-bottom: 12px;
+    }
+    .q-number { font-size: 12px; color: #A9ABAF; font-weight: 600; margin-bottom: 6px; }
+    .q-title {
+      font-size: 20px; font-weight: 500; color: #091E42;
+      line-height: 28px; margin-bottom: 6px;
+    }
+    .q-subtitle { font-size: 14px; color: #505258; line-height: 21px; margin-bottom: 24px; }
+    .q-type-badge {
+      display: inline-block;
+      font-size: 12px; color: #505258;
+      background: #F1F2F4; border-radius: 4px;
+      padding: 2px 8px; margin-bottom: 16px;
+    }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 13px 15px;
+      border: 1.5px solid #DCDFE4; border-radius: 5px;
+      cursor: pointer;
+      transition: border-color 0.13s, background 0.13s, box-shadow 0.13s;
+      user-select: none;
+    }
+    .option:hover { border-color: #85B8FF; background: #F8FBFF; }
+    .option.selected {
+      border-color: #0C66E4; background: #E9F2FF;
+      box-shadow: 0 0 0 2px rgba(12,102,228,0.12);
+    }
+    .option-ctrl {
+      width: 18px; height: 18px; flex-shrink: 0;
+      margin-top: 2px; accent-color: #0C66E4;
+      cursor: pointer;
+    }
+    .option-body { flex: 1; }
+    .option-label { font-size: 15px; color: #091E42; line-height: 22px; font-weight: 500; }
+    .option-desc  { font-size: 13px; color: #505258; margin-top: 2px; line-height: 19px; }
+
+    /* Other reveal */
+    .other-reveal {
+      margin-top: 12px;
+      display: none;
+      animation: fadeUp 0.15s ease;
+    }
+    .other-reveal.visible { display: block; }
+
+    /* Text inputs */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block; font-size: 14px; font-weight: 600;
+      color: #091E42; margin-bottom: 6px;
+    }
+    .field .optional { font-weight: 400; color: #A9ABAF; font-size: 13px; }
+    input[type="text"], input[type="url"], textarea {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid #DCDFE4; border-radius: 5px;
+      padding: 11px 13px;
+      font-size: 15px; font-family: inherit; color: #091E42;
+      outline: none;
+      transition: border-color 0.13s, box-shadow 0.13s;
+      resize: vertical;
+    }
+    input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
+      border-color: #0C66E4;
+      box-shadow: 0 0 0 2px rgba(12,102,228,0.18);
+    }
+    input[type="text"]::placeholder, input[type="url"]::placeholder,
+    textarea::placeholder { color: #A9ABAF; }
+    textarea { min-height: 100px; line-height: 1.5; }
+
+    /* Upload area */
+    .upload-zone {
+      margin-top: 14px;
+      border: 2px dashed #DCDFE4; border-radius: 6px;
+      padding: 22px 20px; text-align: center;
+      cursor: pointer;
+      transition: border-color 0.13s, background 0.13s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: #0C66E4; background: #F0F5FF;
+    }
+    .upload-icon { font-size: 26px; margin-bottom: 6px; }
+    .upload-text { font-size: 13px; color: #505258; line-height: 1.5; }
+    .upload-text strong { color: #0C66E4; }
+    input[type="file"] { display: none; }
+    .uploaded-files { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .file-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: #F1F2F4; border-radius: 4px;
+      padding: 7px 12px; font-size: 13px; color: #091E42;
+    }
+    .file-chip-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-chip-size { color: #A9ABAF; font-size: 12px; flex-shrink: 0; }
+    .file-chip-remove {
+      cursor: pointer; color: #A9ABAF; font-size: 16px; line-height: 1; flex-shrink: 0;
+    }
+    .file-chip-remove:hover { color: #AE2A19; }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid #DCDFE4; margin: 20px 0; }
+
+    /* Nav buttons */
+    .nav-buttons {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 32px; gap: 12px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px; min-height: 44px;
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      border-radius: 5px; border: 1.5px solid transparent;
+      cursor: pointer; transition: background 0.13s, border-color 0.13s, box-shadow 0.13s;
+    }
+    .btn-primary {
+      background: #0C66E4; color: #fff; border-color: #0C66E4;
+      box-shadow: rgba(9,30,66,0.15) 0px 4px 8px 0px;
+    }
+    .btn-primary:hover { background: #0055CC; border-color: #0055CC; }
+    .btn-secondary { background: #fff; color: #172B4D; border-color: #DCDFE4; }
+    .btn-secondary:hover { background: #F1F2F4; }
+    .btn-ghost { background: transparent; color: #505258; border-color: transparent; }
+    .btn-ghost:hover { background: #F1F2F4; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+    .btn-lg { padding: 13px 28px; font-size: 16px; min-height: 50px; }
+
+    /* Assumption note */
+    .assumption-note {
+      display: flex; gap: 10px;
+      background: #FFFAE6; border: 1px solid #F5CD47; border-radius: 5px;
+      padding: 12px 15px; font-size: 13px; color: #091E42; line-height: 1.5;
+      margin-top: 16px;
+    }
+    .assumption-icon { flex-shrink: 0; font-size: 15px; }
+
+    /* Summary screen */
+    .summary-hero { text-align: center; margin-bottom: 32px; }
+    .summary-icon {
+      width: 60px; height: 60px; background: #E9F2FF; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; font-size: 26px;
+    }
+    .summary-title { font-size: 22px; font-weight: 500; color: #091E42; margin-bottom: 6px; }
+    .summary-subtitle { font-size: 14px; color: #505258; }
+
+    .output-block {
+      background: #091E42; color: #C7D1E0;
+      border-radius: 5px; padding: 20px 20px 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12.5px; line-height: 1.65;
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 420px; overflow-y: auto;
+      position: relative; margin: 0 0 6px;
+    }
+    .output-actions {
+      display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 20px;
+    }
+    .copy-success { font-size: 13px; color: #22863a; display: none; align-items: center; gap: 4px; }
+    .copy-success.show { display: flex; }
+
+    .instructions-box {
+      background: #E9F2FF; border: 1px solid #85B8FF; border-radius: 5px;
+      padding: 18px 20px; font-size: 14px; color: #091E42; line-height: 1.6;
+    }
+    .instructions-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    .instructions-box ol { padding-left: 20px; }
+    .instructions-box li { margin-bottom: 7px; }
+    .instructions-box code {
+      background: rgba(12,102,228,0.1); border-radius: 3px;
+      padding: 1px 5px; font-size: 12.5px;
+    }
+
+    .restart-wrap { text-align: center; margin-top: 24px; }
+
+    /* Responsive */
+    @media (max-width: 599px) {
+      .container { padding: 0 16px; margin-top: 24px; }
+      .card { padding: 24px 18px; }
+      .nav-buttons { flex-direction: column-reverse; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">C</div>
+  <span class="nav-title">Build with Claude</span>
+  <div class="nav-spacer"></div>
+  <span class="nav-step" id="nav-step-label"></span>
+</nav>
+
+<div class="container">
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-meta">
+      <span id="progress-label">Question 1</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+  <div id="card-mount"></div>
+</div>
+
+<script>
+/* ─── DATA ─────────────────────────────────────────────────────────────── */
+
+const QUESTIONS = [
+  {
+    id: 'app_identity',
+    alwaysShow: true,
+    type: 'text_fields',
+    title: 'What are you building?',
+    subtitle: 'Give your app a name and reference a product that looks or works like what you have in mind. This single reference saves dozens of follow-up questions.',
+    tag: null,
+    fields: [
+      { key: 'app_name',   label: 'App name',                         type: 'text', placeholder: 'e.g. ShiftSync, BudgetPal, TaskMate', required: true },
+      { key: 'similar_app', label: 'Similar app or URL', optional: true, type: 'text', placeholder: 'e.g.  https://trello.com  or  "like Airbnb but for parking"' },
+    ],
+    extraTextarea: {
+      key: 'app_description',
+      label: 'Describe your idea in plain words',
+      optional: true,
+      placeholder: 'Tell us what the app does, who uses it, and what problem it solves. No technical language needed.',
+    },
+  },
+  {
+    id: 'detail_level',
+    alwaysShow: true,
+    type: 'single',
+    title: 'How much detail can you share right now?',
+    subtitle: 'Your answer shapes the length of this survey. Honest is best — if you have rough ideas, Claude will fill in the gaps and state its assumptions clearly.',
+    tag: 'Calibration — adjusts survey length',
+    options: [
+      { value: 'rough',    label: 'Just a rough idea',           desc: 'I know the problem but have not thought through the details. Let Claude fill in the gaps.' },
+      { value: 'some',     label: 'I have thought about it',     desc: 'I have a clear vision in my head but have not written it down yet.' },
+      { value: 'detailed', label: 'I have detailed requirements', desc: 'I have documents, wireframes, or a written spec I can upload.' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'app_type',
+    alwaysShow: true,
+    type: 'single',
+    title: 'What kind of app is this?',
+    subtitle: 'Choose the platform your users will primarily use.',
+    tag: null,
+    options: [
+      { value: 'web',      label: 'Web app',            desc: 'Runs in a browser — desktop or laptop' },
+      { value: 'mobile',   label: 'Mobile app',         desc: 'iOS and/or Android native app' },
+      { value: 'both',     label: 'Web and mobile',     desc: 'Users can use it from any device' },
+      { value: 'internal', label: 'Internal tool',      desc: 'For your own team only, not the public' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'target_users',
+    alwaysShow: true,
+    type: 'multiple',
+    title: 'Who are your target users?',
+    subtitle: 'Select all that apply.',
+    tag: null,
+    options: [
+      { value: 'consumers',   label: 'General public (B2C)',         desc: 'Everyday people using the app for personal needs' },
+      { value: 'businesses',  label: 'Businesses (B2B)',             desc: 'Companies paying to use it for their operations' },
+      { value: 'internal',    label: 'Internal team only',           desc: 'Your own employees or colleagues' },
+      { value: 'marketplace', label: 'Both sides of a marketplace',  desc: 'e.g. buyers and sellers, drivers and passengers' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'problem',
+    alwaysShow: true,
+    type: 'multiple',
+    title: 'What problem does your app solve?',
+    subtitle: 'Select all that apply. A focused problem is better than many.',
+    tag: null,
+    options: [
+      { value: 'saves_time',      label: 'Saves time on a repetitive task',        desc: 'Something people do over and over that could be automated' },
+      { value: 'connects',        label: 'Connects people who need each other',     desc: 'Matching, marketplace, or networking' },
+      { value: 'replaces_manual', label: 'Replaces a paper or manual process',     desc: 'Digitising spreadsheets, forms, or pen-and-paper workflows' },
+      { value: 'affordable',      label: 'Makes something expensive more accessible', desc: 'Democratising a service currently out of reach' },
+      { value: 'track',           label: 'Helps people track or manage information', desc: 'Dashboards, inventory, records, analytics' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'current_solution',
+    alwaysShow: true,
+    type: 'single',
+    title: 'How do people solve this problem today?',
+    subtitle: 'Understanding the status quo defines what "better" looks like.',
+    tag: null,
+    options: [
+      { value: 'spreadsheets', label: 'Spreadsheets or documents',       desc: 'Excel, Google Sheets, Word, paper forms' },
+      { value: 'nothing',      label: 'No good solution exists',         desc: 'People live with the pain or work around it' },
+      { value: 'competitor',   label: 'A competitor product',            desc: 'Name it in the Other field below' },
+      { value: 'cobbled',      label: 'Multiple tools stitched together', desc: 'Using 3-5 apps to get one job done' },
+      { value: 'manual',       label: 'Done manually or physically',     desc: 'By phone, in person, or with human effort each time' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'core_action',
+    alwaysShow: true,
+    type: 'single',
+    title: 'What is the one core thing users come to your app to do?',
+    subtitle: 'If your app could only do one thing, what would it be?',
+    tag: null,
+    options: [
+      { value: 'search',      label: 'Search and find something',      desc: 'Discover products, services, people, or information' },
+      { value: 'book',        label: 'Book or schedule something',      desc: 'Reserve time slots, manage calendars or shifts' },
+      { value: 'buy_sell',    label: 'Buy or sell something',           desc: 'E-commerce, marketplace, or transactions' },
+      { value: 'create',      label: 'Create and manage content',       desc: 'Write, upload, organise, or publish things' },
+      { value: 'communicate', label: 'Connect and communicate',         desc: 'Message, collaborate, or network with others' },
+      { value: 'track',       label: 'Track and monitor something',     desc: 'Dashboard, analytics, inventory, or reporting' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'key_screens',
+    minLevel: 'some',
+    type: 'multiple',
+    title: 'Which screens or pages should the app have?',
+    subtitle: 'Select everything a user would see. You can adjust later.',
+    tag: null,
+    options: [
+      { value: 'login',         label: 'Login / Register' },
+      { value: 'dashboard',     label: 'Home / Dashboard' },
+      { value: 'search',        label: 'Search / Browse / Explore' },
+      { value: 'profile',       label: 'Profile / Account settings' },
+      { value: 'messaging',     label: 'Messaging / Chat' },
+      { value: 'booking',       label: 'Booking / Scheduling / Calendar' },
+      { value: 'payment',       label: 'Payment / Checkout' },
+      { value: 'admin',         label: 'Admin panel' },
+      { value: 'notifications', label: 'Notifications feed' },
+      { value: 'reporting',     label: 'Reports / Analytics' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'must_have_features',
+    minLevel: 'some',
+    type: 'multiple',
+    title: 'Which features are essential for the first version?',
+    subtitle: 'Be strict — only select what is truly required on day one.',
+    tag: null,
+    options: [
+      { value: 'auth',          label: 'User login and registration' },
+      { value: 'search_filter', label: 'Search and filtering' },
+      { value: 'notifications', label: 'Email or push notifications' },
+      { value: 'payments',      label: 'Payments (Stripe, etc.)' },
+      { value: 'file_upload',   label: 'File or image uploads' },
+      { value: 'chat',          label: 'Chat or messaging' },
+      { value: 'admin_panel',   label: 'Admin panel (manage users/content)' },
+      { value: 'analytics',     label: 'Reporting or analytics dashboard' },
+      { value: 'integrations',  label: 'Third-party integrations (Maps, CRM, etc.)' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'look_feel',
+    minLevel: 'some',
+    type: 'multiple',
+    title: 'What look and feel do you want?',
+    subtitle: 'Select all that match the vibe you are going for.',
+    tag: null,
+    options: [
+      { value: 'minimal',      label: 'Clean and minimal',             desc: 'Like Notion, Linear, or Apple' },
+      { value: 'professional', label: 'Professional and corporate',    desc: 'Like Salesforce, Monday, or Workday' },
+      { value: 'colorful',     label: 'Colorful and approachable',     desc: 'Like Duolingo, Canva, or Figma' },
+      { value: 'dark',         label: 'Dark mode / developer style',   desc: 'Like GitHub, Vercel, or VS Code' },
+      { value: 'marketplace',  label: 'Marketplace / consumer style',  desc: 'Like Airbnb, Etsy, or Booking.com' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'success_metric',
+    alwaysShow: true,
+    type: 'single',
+    title: 'What does success look like in 6 months?',
+    subtitle: 'Pick the one metric you would use to know this worked.',
+    tag: null,
+    options: [
+      { value: 'users',      label: 'Number of users who sign up' },
+      { value: 'revenue',    label: 'Revenue generated' },
+      { value: 'tasks',      label: 'Number of tasks or bookings completed' },
+      { value: 'validation', label: 'Validated the idea (real users tried it)' },
+      { value: 'retention',  label: 'Users keep coming back (retention / daily active users)' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'timeline',
+    alwaysShow: true,
+    type: 'single',
+    title: 'When do you need a working version?',
+    subtitle: 'A tighter deadline means a smaller first version. Be realistic.',
+    tag: null,
+    options: [
+      { value: '2weeks',   label: '1-2 weeks',           desc: 'Micro-MVP: the bare minimum to show someone' },
+      { value: '1month',   label: '1 month',             desc: 'Small MVP: core flow working end-to-end' },
+      { value: '3months',  label: '2-3 months',          desc: 'Solid MVP: polished enough for early customers' },
+      { value: '6months',  label: '6 months or more',    desc: 'Full product: multiple features, production-ready' },
+      { value: 'flexible', label: 'No strict deadline',  desc: 'Getting it right matters more than speed' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'budget',
+    alwaysShow: true,
+    type: 'single',
+    title: 'What is your monthly infrastructure budget?',
+    subtitle: 'This covers hosting, database, and services like email or payments. Does not include Claude usage.',
+    tag: null,
+    options: [
+      { value: 'free',   label: 'Free / under $20/month',  desc: 'Startup mode — use free tiers wherever possible' },
+      { value: 'small',  label: '$20-$100/month',          desc: 'Early stage — some paid services are OK' },
+      { value: 'medium', label: '$100-$500/month',         desc: 'Growth stage — quality infrastructure' },
+      { value: 'large',  label: '$500+/month',             desc: 'Scale — whatever is needed to serve users well' },
+      { value: 'unsure', label: 'Not sure yet',            desc: 'Claude will recommend based on scope' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'existing_docs',
+    minLevel: 'detailed',
+    type: 'multiple_upload',
+    title: 'Do you have any existing documents or designs to share?',
+    subtitle: 'Upload anything useful. Claude will use these directly instead of guessing.',
+    tag: null,
+    options: [
+      { value: 'wireframes',   label: 'Wireframes or mockups',           canUpload: true },
+      { value: 'spec',         label: 'Written spec or requirements doc', canUpload: true },
+      { value: 'screenshots',  label: 'Competitor or inspiration screenshots', canUpload: true },
+      { value: 'brand',        label: 'Logo or brand guidelines',        canUpload: true },
+      { value: 'none',         label: 'Starting from scratch — no documents' },
+    ],
+    hasOther: true,
+  },
+  {
+    id: 'anything_else',
+    alwaysShow: true,
+    type: 'textarea_only',
+    title: 'Anything else Claude should know?',
+    subtitle: 'Regulations, hard constraints, things you definitely do not want, personal context — anything goes.',
+    tag: null,
+    placeholder: 'e.g. "Must comply with HIPAA" or "Had a failed attempt before — payments were the blocker" or "Design must feel premium for enterprise clients" or "The app must work offline"',
+  },
+];
+
+/* ─── STATE ─────────────────────────────────────────────────────────────── */
+
+const answers  = {};   // { questionId: value | value[] | string }
+const others   = {};   // { questionId: string }
+const textFields = {}; // { questionId: { fieldKey: string } }
+const uploadedFiles = {}; // { questionId: File[] }
+let currentIdx = 0;
+
+function getDetailLevel() { return answers['detail_level'] || 'rough'; }
+
+function visibleQuestions() {
+  const level = getDetailLevel();
+  const order = { rough: 0, some: 1, detailed: 2 };
+  return QUESTIONS.filter(q => {
+    if (q.alwaysShow) return true;
+    if (!q.minLevel) return false;
+    return order[level] >= order[q.minLevel];
+  });
+}
+
+function currentQuestion() { return visibleQuestions()[currentIdx]; }
+function totalQuestions()   { return visibleQuestions().length; }
+
+/* ─── HELPERS ────────────────────────────────────────────────────────────── */
+
+function getAnswer(id)  { return answers[id]; }
+function getAnswers(id) { return Array.isArray(answers[id]) ? answers[id] : (answers[id] ? [answers[id]] : []); }
+function getOther(id)   { return others[id] || ''; }
+function getTextField(id, key) { return (textFields[id] || {})[key] || ''; }
+
+function isSelected(qid, value) {
+  const a = answers[qid];
+  if (Array.isArray(a)) return a.includes(value);
+  return a === value;
+}
+
+function toggleMultiple(qid, value) {
+  if (!answers[qid]) answers[qid] = [];
+  const idx = answers[qid].indexOf(value);
+  if (idx === -1) answers[qid].push(value);
+  else answers[qid].splice(idx, 1);
+}
+
+function setSingle(qid, value) { answers[qid] = value; }
+
+function fmtFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+/* ─── RENDER ─────────────────────────────────────────────────────────────── */
+
+function updateProgress() {
+  const total = totalQuestions();
+  const pct = Math.round((currentIdx / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${currentIdx + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('nav-step-label').textContent = `${currentIdx + 1} / ${total}`;
+}
+
+function renderQuestion() {
+  const q = currentQuestion();
+  if (!q) { renderSummary(); return; }
+  updateProgress();
+
+  const mount = document.getElementById('card-mount');
+  mount.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = buildQuestionHTML(q);
+  mount.appendChild(card);
+
+  attachListeners(q, card);
+  syncSelectionStyles(q, card);
+}
+
+function buildQuestionHTML(q) {
+  let html = '';
+
+  if (q.tag)   html += `<div class="q-tag">${q.tag}</div>`;
+  html += `<div class="q-title">${q.title}</div>`;
+  if (q.subtitle) html += `<div class="q-subtitle">${q.subtitle}</div>`;
+
+  if (q.type === 'text_fields') {
+    html += buildTextFieldsHTML(q);
+  } else if (q.type === 'single' || q.type === 'multiple' || q.type === 'multiple_upload') {
+    if (q.type === 'multiple' || q.type === 'multiple_upload') {
+      html += `<div class="q-type-badge">Select all that apply</div>`;
+    }
+    html += `<div class="options">`;
+    q.options.forEach(opt => {
+      const checked = isSelected(q.id, opt.value) ? 'checked' : '';
+      const selClass = isSelected(q.id, opt.value) ? ' selected' : '';
+      const inputType = (q.type === 'single') ? 'radio' : 'checkbox';
+      html += `
+        <label class="option${selClass}" data-value="${opt.value}">
+          <input class="option-ctrl" type="${inputType}" name="${q.id}" value="${opt.value}" ${checked} />
+          <div class="option-body">
+            <div class="option-label">${opt.label}</div>
+            ${opt.desc ? `<div class="option-desc">${opt.desc}</div>` : ''}
+          </div>
+        </label>`;
+      if (opt.canUpload) {
+        html += buildUploadHTML(q.id, opt.value);
+      }
+    });
+    if (q.hasOther) {
+      const otherChecked = others[q.id] !== undefined && getAnswers(q.id).includes('__other__') ? 'checked' : '';
+      const otherSel = otherChecked ? ' selected' : '';
+      const inputType = (q.type === 'single') ? 'radio' : 'checkbox';
+      html += `
+        <label class="option${otherSel}" data-value="__other__">
+          <input class="option-ctrl" type="${inputType}" name="${q.id}" value="__other__" ${otherChecked} />
+          <div class="option-body">
+            <div class="option-label">Other</div>
+            <div class="option-desc">Type your own answer</div>
+          </div>
+        </label>
+        <div class="other-reveal${otherChecked ? ' visible' : ''}" id="other-reveal-${q.id}">
+          <textarea id="other-text-${q.id}" placeholder="Describe in your own words..."
+            rows="3">${others[q.id] || ''}</textarea>
+        </div>`;
+    }
+    html += `</div>`;
+  } else if (q.type === 'textarea_only') {
+    html += `<textarea id="textarea-${q.id}" placeholder="${q.placeholder || ''}" rows="5">${answers[q.id] || ''}</textarea>`;
+  }
+
+  html += buildNavButtons();
+  return html;
+}
+
+function buildTextFieldsHTML(q) {
+  let html = '';
+  q.fields.forEach(f => {
+    const val = getTextField(q.id, f.key);
+    html += `<div class="field">
+      <label>${f.label} ${f.optional ? '<span class="optional">(optional)</span>' : ''}</label>
+      <input type="text" id="field-${q.id}-${f.key}" placeholder="${f.placeholder || ''}" value="${escHtml(val)}" />
+    </div>`;
+  });
+  if (q.extraTextarea) {
+    const et = q.extraTextarea;
+    const val = getTextField(q.id, et.key);
+    html += `<div class="field">
+      <label>${et.label} ${et.optional ? '<span class="optional">(optional)</span>' : ''}</label>
+      <textarea id="field-${q.id}-${et.key}" placeholder="${et.placeholder || ''}" rows="4">${escHtml(val)}</textarea>
+    </div>`;
+  }
+  return html;
+}
+
+function buildUploadHTML(qid, optValue) {
+  const files = (uploadedFiles[qid + '_' + optValue] || []);
+  const revealClass = isSelected(qid, optValue) ? ' visible' : '';
+  let filesHtml = '';
+  files.forEach((f, i) => {
+    filesHtml += `<div class="file-chip">
+      <span>📄</span>
+      <span class="file-chip-name">${escHtml(f.name)}</span>
+      <span class="file-chip-size">${fmtFileSize(f.size)}</span>
+      <span class="file-chip-remove" data-qid="${qid}" data-opt="${optValue}" data-idx="${i}">×</span>
+    </div>`;
+  });
+  return `
+    <div class="other-reveal${revealClass}" id="upload-zone-wrap-${qid}-${optValue}">
+      <input type="file" id="file-input-${qid}-${optValue}" multiple accept="image/*,.pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.sketch,.fig" />
+      <div class="upload-zone" id="upload-zone-${qid}-${optValue}">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text"><strong>Click to upload</strong> or drag and drop<br/>Images, PDFs, Word docs, Figma exports</div>
+      </div>
+      <div class="uploaded-files" id="file-list-${qid}-${optValue}">${filesHtml}</div>
+    </div>`;
+}
+
+function buildNavButtons() {
+  const isFirst = currentIdx === 0;
+  const isLast  = currentIdx === totalQuestions() - 1;
+  return `<div class="nav-buttons">
+    <button class="btn btn-ghost" id="btn-back" ${isFirst ? 'disabled' : ''}>← Back</button>
+    <button class="btn btn-primary" id="btn-next">
+      ${isLast ? 'Generate Brief →' : 'Next →'}
+    </button>
+  </div>`;
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ─── LISTENERS ─────────────────────────────────────────────────────────── */
+
+function attachListeners(q, card) {
+  // Back / Next
+  card.querySelector('#btn-back')?.addEventListener('click', () => navigate(-1));
+  card.querySelector('#btn-next')?.addEventListener('click', () => navigate(1));
+
+  if (q.type === 'text_fields') {
+    q.fields.forEach(f => {
+      card.querySelector(`#field-${q.id}-${f.key}`)?.addEventListener('input', e => {
+        if (!textFields[q.id]) textFields[q.id] = {};
+        textFields[q.id][f.key] = e.target.value;
+      });
+    });
+    if (q.extraTextarea) {
+      card.querySelector(`#field-${q.id}-${q.extraTextarea.key}`)?.addEventListener('input', e => {
+        if (!textFields[q.id]) textFields[q.id] = {};
+        textFields[q.id][q.extraTextarea.key] = e.target.value;
+      });
+    }
+  }
+
+  if (q.type === 'single' || q.type === 'multiple' || q.type === 'multiple_upload') {
+    card.querySelectorAll('.option').forEach(opt => {
+      opt.addEventListener('click', e => {
+        const input = opt.querySelector('input');
+        if (!input) return;
+        const val = input.value;
+
+        if (q.type === 'single') {
+          setSingle(q.id, val);
+          if (val !== '__other__') others[q.id] = undefined;
+        } else {
+          if (val === 'none') {
+            // Deselect everything else if 'none' chosen
+            answers[q.id] = isSelected(q.id, 'none') ? [] : ['none'];
+          } else {
+            if (isSelected(q.id, 'none')) {
+              answers[q.id] = answers[q.id].filter(v => v !== 'none');
+            }
+            toggleMultiple(q.id, val);
+          }
+        }
+
+        syncSelectionStyles(q, card);
+        toggleOtherReveal(q, card);
+        toggleUploadReveal(q, card);
+
+        if (q.id === 'detail_level') renderQuestion(); // recount visible Qs
+      });
+    });
+
+    card.querySelector(`#other-text-${q.id}`)?.addEventListener('input', e => {
+      others[q.id] = e.target.value;
+    });
+  }
+
+  if (q.type === 'textarea_only') {
+    card.querySelector(`#textarea-${q.id}`)?.addEventListener('input', e => {
+      answers[q.id] = e.target.value;
+    });
+  }
+
+  // Upload zones
+  card.querySelectorAll('[id^="upload-zone-"]').forEach(zone => {
+    const parts = zone.id.replace('upload-zone-','').split('-');
+    const qid = parts[0]; const opt = parts.slice(1).join('-');
+    const input = card.querySelector(`#file-input-${qid}-${opt}`);
+    if (!input) return;
+    zone.addEventListener('click', () => input.click());
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      addFiles(qid, opt, Array.from(e.dataTransfer.files), card);
+    });
+    input.addEventListener('change', () => {
+      addFiles(qid, opt, Array.from(input.files), card);
+      input.value = '';
+    });
+  });
+
+  // Remove file buttons
+  card.querySelectorAll('.file-chip-remove').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const { qid, opt, idx } = btn.dataset;
+      removeFile(qid, opt, parseInt(idx), card);
+    });
+  });
+}
+
+function addFiles(qid, opt, files, card) {
+  const key = qid + '_' + opt;
+  if (!uploadedFiles[key]) uploadedFiles[key] = [];
+  uploadedFiles[key].push(...files);
+  refreshFileList(qid, opt, card);
+}
+
+function removeFile(qid, opt, idx, card) {
+  const key = qid + '_' + opt;
+  if (uploadedFiles[key]) uploadedFiles[key].splice(idx, 1);
+  refreshFileList(qid, opt, card);
+}
+
+function refreshFileList(qid, opt, card) {
+  const list = card.querySelector(`#file-list-${qid}-${opt}`);
+  if (!list) return;
+  const files = uploadedFiles[qid + '_' + opt] || [];
+  list.innerHTML = files.map((f,i) => `
+    <div class="file-chip">
+      <span>📄</span>
+      <span class="file-chip-name">${escHtml(f.name)}</span>
+      <span class="file-chip-size">${fmtFileSize(f.size)}</span>
+      <span class="file-chip-remove" data-qid="${qid}" data-opt="${opt}" data-idx="${i}">×</span>
+    </div>`).join('');
+  list.querySelectorAll('.file-chip-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      removeFile(btn.dataset.qid, btn.dataset.opt, parseInt(btn.dataset.idx), card);
+    });
+  });
+}
+
+function syncSelectionStyles(q, card) {
+  card.querySelectorAll('.option').forEach(opt => {
+    const input = opt.querySelector('input');
+    if (!input) return;
+    const sel = isSelected(q.id, input.value);
+    opt.classList.toggle('selected', sel);
+    input.checked = sel;
+  });
+}
+
+function toggleOtherReveal(q, card) {
+  const reveal = card.querySelector(`#other-reveal-${q.id}`);
+  if (!reveal) return;
+  const show = isSelected(q.id, '__other__');
+  reveal.classList.toggle('visible', show);
+  if (show) card.querySelector(`#other-text-${q.id}`)?.focus();
+}
+
+function toggleUploadReveal(q, card) {
+  if (q.type !== 'multiple_upload') return;
+  q.options.forEach(opt => {
+    if (!opt.canUpload) return;
+    const wrap = card.querySelector(`#upload-zone-wrap-${q.id}-${opt.value}`);
+    if (wrap) wrap.classList.toggle('visible', isSelected(q.id, opt.value));
+  });
+}
+
+/* ─── NAVIGATION ─────────────────────────────────────────────────────────── */
+
+function navigate(dir) {
+  const q = currentQuestion();
+  // Save textarea_only answer on navigate
+  if (q && q.type === 'textarea_only') {
+    const ta = document.querySelector(`#textarea-${q.id}`);
+    if (ta) answers[q.id] = ta.value;
+  }
+
+  const next = currentIdx + dir;
+  if (next < 0) return;
+  if (next >= totalQuestions()) {
+    renderSummary();
+    return;
+  }
+  currentIdx = next;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─── SUMMARY ────────────────────────────────────────────────────────────── */
+
+function renderSummary() {
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('nav-step-label').textContent = 'Summary';
+
+  const output = generateSummary();
+  const mount = document.getElementById('card-mount');
+  mount.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="summary-hero">
+      <div class="summary-icon">✅</div>
+      <div class="summary-title">Your product brief is ready</div>
+      <div class="summary-subtitle">Copy the brief below and paste it into a new Claude Code session to start building.</div>
+    </div>
+
+    <div class="output-block" id="output-text">${escHtml(output)}</div>
+    <div class="output-actions">
+      <span class="copy-success" id="copy-success">✓ Copied!</span>
+      <button class="btn btn-secondary" id="btn-copy">Copy to clipboard</button>
+    </div>
+
+    <div class="instructions-box">
+      <h3>How to use this brief with Claude</h3>
+      <ol>
+        <li>Open <strong>Claude Code</strong> (terminal or claude.ai/code) in a new session.</li>
+        <li>Paste the entire brief above into the chat.</li>
+        ${hasUploads() ? '<li>Also attach any uploaded files to the same message.</li>' : ''}
+        <li>Send this message:<br/><code>"Act as Head of Product. Using this intake brief, create a business case. Where information is missing, state your assumption and mark it [ASSUMPTION]. Then ask if I want to proceed to /spec."</code></li>
+        <li>Review the business case. Say <code>GO</code> to continue to product spec, or give corrections.</li>
+      </ol>
+    </div>
+
+    <div class="restart-wrap">
+      <button class="btn btn-ghost" id="btn-restart">← Start over</button>
+    </div>`;
+  mount.appendChild(card);
+
+  card.querySelector('#btn-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(output).then(() => {
+      const s = card.querySelector('#copy-success');
+      s.classList.add('show');
+      setTimeout(() => s.classList.remove('show'), 2000);
+    });
+  });
+  card.querySelector('#btn-restart').addEventListener('click', () => {
+    if (confirm('Start the survey over? All answers will be cleared.')) {
+      Object.keys(answers).forEach(k => delete answers[k]);
+      Object.keys(others).forEach(k => delete others[k]);
+      Object.keys(textFields).forEach(k => delete textFields[k]);
+      Object.keys(uploadedFiles).forEach(k => delete uploadedFiles[k]);
+      currentIdx = 0;
+      document.getElementById('progress-wrap').style.display = '';
+      renderQuestion();
+    }
+  });
+}
+
+function hasUploads() {
+  return Object.keys(uploadedFiles).some(k => uploadedFiles[k].length > 0);
+}
+
+function generateSummary() {
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const level = getDetailLevel();
+  let gaps = [];
+  let out = '';
+
+  out += `=== PRODUCT INTAKE BRIEF FOR CLAUDE ===\n`;
+  out += `Generated: ${date}\n`;
+  out += `Detail level provided: ${level === 'rough' ? 'Rough idea' : level === 'some' ? 'Some detail' : 'Detailed requirements'}\n`;
+  out += `\n${'─'.repeat(50)}\n\n`;
+
+  // App identity
+  const appName = getTextField('app_identity', 'app_name');
+  const similar  = getTextField('app_identity', 'similar_app');
+  const appDesc  = getTextField('app_identity', 'app_description') || getOther('app_identity');
+  out += `APP IDENTITY\n`;
+  out += `Name: ${appName || '[ASSUMPTION: to be named]'}\n`;
+  if (!appName) gaps.push('App name');
+  if (similar)  out += `Reference: ${similar}\n`;
+  if (appDesc)  out += `Description: ${appDesc}\n`;
+  out += '\n';
+
+  // App type
+  const typeMap = { web: 'Web app (browser)', mobile: 'Mobile app (iOS/Android)', both: 'Web + Mobile', internal: 'Internal team tool' };
+  const appType = getAnswer('app_type');
+  out += `APP TYPE\n${appType ? (typeMap[appType] || appType) : '[ASSUMPTION: Web app]'}\n`;
+  if (!appType) gaps.push('App type');
+  if (getOther('app_type')) out += `Note: ${getOther('app_type')}\n`;
+  out += '\n';
+
+  // Target users
+  const userMap = { consumers: 'General public (B2C)', businesses: 'Businesses (B2B)', internal: 'Internal team only', marketplace: 'Two-sided marketplace' };
+  const users = getAnswers('target_users').filter(v => v !== '__other__');
+  out += `TARGET USERS\n`;
+  if (users.length) { users.forEach(v => out += `- ${userMap[v] || v}\n`); }
+  else { out += `- [ASSUMPTION: General public / consumers]\n`; gaps.push('Target users'); }
+  if (getOther('target_users')) out += `- Other: ${getOther('target_users')}\n`;
+  out += '\n';
+
+  // Problem
+  const probMap = { saves_time: 'Saves time on a repetitive task', connects: 'Connects people who need each other', replaces_manual: 'Replaces a paper / manual process', affordable: 'Makes something expensive more accessible', track: 'Helps people track or manage information' };
+  const probs = getAnswers('problem').filter(v => v !== '__other__');
+  out += `PROBLEM BEING SOLVED\n`;
+  if (probs.length) { probs.forEach(v => out += `- ${probMap[v] || v}\n`); }
+  else { out += `- [ASSUMPTION: general productivity or task management]\n`; gaps.push('Problem being solved'); }
+  if (getOther('problem')) out += `- Other: ${getOther('problem')}\n`;
+  out += '\n';
+
+  // Current solution
+  const solMap = { spreadsheets: 'Spreadsheets / manual documents', nothing: 'No good solution currently exists', competitor: 'A competitor product', cobbled: 'Multiple tools stitched together', manual: 'Done manually or physically' };
+  const sol = getAnswer('current_solution');
+  out += `CURRENT SOLUTION\n${sol ? (solMap[sol] || sol) : '[ASSUMPTION: using spreadsheets or manual process]'}\n`;
+  if (!sol) gaps.push('Current solution');
+  if (getOther('current_solution')) out += `Note: ${getOther('current_solution')}\n`;
+  out += '\n';
+
+  // Core action
+  const actionMap = { search: 'Search and find something', book: 'Book or schedule something', buy_sell: 'Buy or sell something', create: 'Create and manage content', communicate: 'Connect and communicate', track: 'Track and monitor something' };
+  const action = getAnswer('core_action');
+  out += `CORE USER ACTION\n${action ? (actionMap[action] || action) : '[ASSUMPTION: manage and track information]'}\n`;
+  if (!action) gaps.push('Core user action');
+  if (getOther('core_action')) out += `Note: ${getOther('core_action')}\n`;
+  out += '\n';
+
+  // Key screens (if answered)
+  const screenMap = { login: 'Login / Register', dashboard: 'Home / Dashboard', search: 'Search / Browse / Explore', profile: 'Profile / Account settings', messaging: 'Messaging / Chat', booking: 'Booking / Scheduling / Calendar', payment: 'Payment / Checkout', admin: 'Admin panel', notifications: 'Notifications feed', reporting: 'Reports / Analytics' };
+  const screens = getAnswers('key_screens').filter(v => v !== '__other__');
+  if (screens.length) {
+    out += `KEY SCREENS\n`;
+    screens.forEach(v => out += `- ${screenMap[v] || v}\n`);
+    if (getOther('key_screens')) out += `- Other: ${getOther('key_screens')}\n`;
+    out += '\n';
+  }
+
+  // Must-have features (if answered)
+  const featMap = { auth: 'User login and registration', search_filter: 'Search and filtering', notifications: 'Email or push notifications', payments: 'Payment processing (Stripe)', file_upload: 'File / image uploads', chat: 'Chat or messaging', admin_panel: 'Admin panel', analytics: 'Reporting / analytics dashboard', integrations: 'Third-party integrations' };
+  const feats = getAnswers('must_have_features').filter(v => v !== '__other__');
+  if (feats.length) {
+    out += `MUST-HAVE FEATURES (MVP)\n`;
+    feats.forEach(v => out += `- ${featMap[v] || v}\n`);
+    if (getOther('must_have_features')) out += `- Other: ${getOther('must_have_features')}\n`;
+    out += '\n';
+  }
+
+  // Look & feel (if answered)
+  const lookMap = { minimal: 'Clean and minimal (like Notion, Linear)', professional: 'Professional and corporate (like Salesforce, Monday)', colorful: 'Colorful and approachable (like Duolingo, Canva)', dark: 'Dark mode / developer style (like GitHub, Vercel)', marketplace: 'Marketplace / consumer style (like Airbnb, Etsy)' };
+  const looks = getAnswers('look_feel').filter(v => v !== '__other__');
+  if (looks.length) {
+    out += `LOOK & FEEL\n`;
+    looks.forEach(v => out += `- ${lookMap[v] || v}\n`);
+    if (getOther('look_feel')) out += `- Other: ${getOther('look_feel')}\n`;
+    out += '\n';
+  }
+
+  // Existing docs (if answered)
+  const docMap = { wireframes: 'Wireframes / mockups (uploaded)', spec: 'Written spec / requirements (uploaded)', screenshots: 'Competitor screenshots (uploaded)', brand: 'Logo / brand guidelines (uploaded)', none: 'Starting from scratch — no documents' };
+  const docs = getAnswers('existing_docs').filter(v => v !== '__other__');
+  if (docs.length) {
+    out += `EXISTING DOCUMENTS\n`;
+    docs.forEach(v => out += `- ${docMap[v] || v}\n`);
+    if (getOther('existing_docs')) out += `- Other: ${getOther('existing_docs')}\n`;
+    // List uploaded files
+    const allUploaded = [];
+    Object.keys(uploadedFiles).forEach(k => uploadedFiles[k].forEach(f => allUploaded.push(f.name)));
+    if (allUploaded.length) {
+      out += `Uploaded files:\n`;
+      allUploaded.forEach(n => out += `  - ${n}\n`);
+    }
+    out += '\n';
+  }
+
+  // Success metric
+  const metricMap = { users: 'Number of users who sign up', revenue: 'Revenue generated', tasks: 'Number of tasks / bookings completed', validation: 'Idea validated (real users tried it)', retention: 'Users keep coming back (retention / DAU)' };
+  const metric = getAnswer('success_metric');
+  out += `SUCCESS METRIC (6 months)\n${metric ? (metricMap[metric] || metric) : '[ASSUMPTION: user sign-ups and active engagement]'}\n`;
+  if (!metric) gaps.push('Success metric');
+  if (getOther('success_metric')) out += `Note: ${getOther('success_metric')}\n`;
+  out += '\n';
+
+  // Timeline
+  const timeMap = { '2weeks': '1-2 weeks (Micro-MVP)', '1month': '1 month (Small MVP)', '3months': '2-3 months (Solid MVP)', '6months': '6 months+ (Full product)', 'flexible': 'No strict deadline' };
+  const time = getAnswer('timeline');
+  out += `TIMELINE\n${time ? (timeMap[time] || time) : '[ASSUMPTION: 1-2 months]'}\n`;
+  if (!time) gaps.push('Timeline');
+  if (getOther('timeline')) out += `Note: ${getOther('timeline')}\n`;
+  out += '\n';
+
+  // Budget
+  const budgetMap = { free: 'Free / under $20/month (use free tiers)', small: '$20-$100/month', medium: '$100-$500/month', large: '$500+/month', unsure: 'Not specified — Claude to recommend' };
+  const budget = getAnswer('budget');
+  out += `MONTHLY INFRASTRUCTURE BUDGET\n${budget ? (budgetMap[budget] || budget) : '[ASSUMPTION: free / low-cost tiers]'}\n`;
+  if (!budget) gaps.push('Budget');
+  if (getOther('budget')) out += `Note: ${getOther('budget')}\n`;
+  out += '\n';
+
+  // Anything else
+  const extra = getAnswer('anything_else');
+  if (extra) {
+    out += `ADDITIONAL CONTEXT\n${extra}\n\n`;
+  }
+
+  out += `${'─'.repeat(50)}\n\n`;
+
+  if (gaps.length > 0) {
+    out += `MISSING INFORMATION (${gaps.length} item${gaps.length > 1 ? 's' : ''})\n`;
+    out += `The following were not answered. Claude should make reasonable assumptions and mark them clearly with [ASSUMPTION]:\n`;
+    gaps.forEach(g => out += `- ${g}\n`);
+    out += '\n';
+  }
+
+  out += `${'─'.repeat(50)}\n\n`;
+  out += `=== HOW TO USE THIS BRIEF ===\n\n`;
+  out += `Paste this entire document into a new Claude Code session and say:\n\n`;
+  out += `"Act as Head of Product. Using this intake brief, create a business case document (save as PLANS/BUSINESS_CASE.md). Where information is marked [ASSUMPTION], state the assumption clearly. At the end, ask if I want to proceed to /spec."\n\n`;
+  if (hasUploads()) {
+    out += `Also attach your uploaded files to the same message.\n\n`;
+  }
+  out += `After the business case is approved, the full workflow is:\n`;
+  out += `/business-case → /spec → /stories → /plan → /build → /test → /review → /deploy`;
+
+  return out;
+}
+
+/* ─── INIT ───────────────────────────────────────────────────────────────── */
+
+renderQuestion();
+</script>
+</body>
+</html>

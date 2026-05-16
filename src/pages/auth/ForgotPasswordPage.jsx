@@ -21,8 +21,8 @@ export default function ForgotPasswordPage() {
   if (submitted) {
     return (
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Check your email</h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="text-2xl font-bold text-trello-navy mb-4">Check your email</h1>
+        <p className="text-trello-gray-dark mb-6">
           If an account exists for <strong>{email}</strong>, you will receive a password reset link.
         </p>
         <Link to="/login" className="link">
@@ -34,13 +34,13 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">Forgot password?</h1>
-      <p className="text-center text-gray-600 mb-6">
+      <h1 className="text-2xl font-bold text-center text-trello-navy mb-2">Forgot password?</h1>
+      <p className="text-center text-trello-gray-dark mb-6">
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-trello text-sm">
           {error.message}
         </div>
       )}
@@ -69,9 +69,9 @@ export default function ForgotPasswordPage() {
         </button>
       </form>
 
-      <hr className="my-6" />
+      <hr className="my-6 border-trello-gray-border" />
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-trello-gray-dark">
         <Link to="/login" className="link">
           Back to login
         </Link>

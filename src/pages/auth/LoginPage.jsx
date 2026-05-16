@@ -8,7 +8,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isLoading, error } = useSelector((state) => state.auth);
-  const redirectTo = searchParams.get('redirect') || '/home';
+  const redirectTo = searchParams.get('redirect') || '/app/home';
 
   const [formData, setFormData] = useState({
     email: '',
@@ -31,10 +31,10 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-gray-900 mb-6">Log in to TaskFlow</h1>
+      <h1 className="text-2xl font-bold text-center text-trello-navy mb-6">Log in to TaskFlow</h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-trello text-sm">
           {error.message}
         </div>
       )}
@@ -77,11 +77,16 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <div className="mt-4 text-center text-sm">
+      <div className="mt-4 text-center text-sm text-trello-gray-dark">
         <Link to="/forgot-password" className="link">
           Forgot password?
         </Link>
       </div>
+      <hr className="my-6 border-trello-gray-border" />
+      <p className="text-center text-sm text-trello-gray-dark">
+        Don&apos;t have an account?{' '}
+        <Link to="/register" className="link">Sign up</Link>
+      </p>
     </div>
   );
 }

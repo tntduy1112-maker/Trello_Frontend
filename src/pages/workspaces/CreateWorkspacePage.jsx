@@ -16,7 +16,7 @@ export default function CreateWorkspacePage() {
     setError('');
     const result = await dispatch(createWorkspace(formData));
     if (createWorkspace.fulfilled.match(result)) {
-      navigate(`/workspaces/${result.payload.slug}`);
+      navigate(`/app/workspaces/${result.payload.slug}`);
     } else {
       setError(result.payload?.message || 'Failed to create workspace');
     }

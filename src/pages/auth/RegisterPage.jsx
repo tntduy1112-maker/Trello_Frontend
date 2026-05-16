@@ -33,10 +33,10 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-gray-900 mb-6">Create your account</h1>
+      <h1 className="text-2xl font-bold text-center text-trello-navy mb-6">Create your account</h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-trello text-sm">
           {error.message}
         </div>
       )}
@@ -96,13 +96,11 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <hr className="my-6" />
+      <hr className="my-6 border-trello-gray-border" />
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-trello-gray-dark">
         Already have an account?{' '}
-        <Link to="/login" className="link">
-          Log in
-        </Link>
+        <Link to="/login" className="link">Log in</Link>
       </p>
     </div>
   );

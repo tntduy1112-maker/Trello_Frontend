@@ -200,7 +200,7 @@ export default function BoardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-trello-blue"></div>
       </div>
     );
   }
@@ -215,7 +215,7 @@ export default function BoardPage() {
         {canManage && (
           <button
             onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex-shrink-0"
+            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-trello text-sm font-semibold transition-colors flex-shrink-0"
           >
             <UserPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Invite</span>
@@ -242,13 +242,15 @@ export default function BoardPage() {
 
         <DragOverlay>
           {activeItem?.type === 'list' && (
-            <div className="bg-gray-100 rounded-xl w-72 p-3 shadow-xl opacity-90">
-              <h3 className="font-semibold text-gray-900">{activeItem.list.title}</h3>
+            <div className="bg-trello-gray-light rounded-trello w-72 p-3 opacity-90"
+              style={{ boxShadow: 'rgba(9, 30, 66, 0.3) 0px 12px 24px 0px' }}>
+              <h3 className="font-semibold text-trello-navy text-sm">{activeItem.list.title}</h3>
             </div>
           )}
           {activeItem?.type === 'card' && (
-            <div className="bg-white rounded-lg p-2 shadow-xl w-64 opacity-90">
-              <p className="text-sm text-gray-900">{activeItem.card.title}</p>
+            <div className="bg-white rounded-trello p-3 w-64 opacity-90 border border-trello-gray-border"
+              style={{ boxShadow: 'rgba(9, 30, 66, 0.3) 0px 12px 24px 0px' }}>
+              <p className="text-sm text-trello-navy font-medium">{activeItem.card.title}</p>
             </div>
           )}
         </DragOverlay>

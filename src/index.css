@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +10,8 @@
   }
 
   body {
-    @apply bg-gray-100 text-gray-900 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-trello-gray-light text-trello-navy antialiased;
     margin: 0;
   }
 
@@ -18,39 +21,82 @@
 }
 
 @layer components {
+  /* Buttons */
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center px-5 py-2 rounded-trello-btn font-semibold text-base leading-6 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-btn;
   }
 
   .btn-primary {
-    @apply bg-trello-blue text-white hover:bg-trello-blue-hover;
+    @apply bg-trello-blue text-white hover:bg-trello-blue-hover active:bg-trello-blue-active;
+    box-shadow: rgba(9, 30, 66, 0.15) 0px 8px 16px 0px;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+    @apply bg-white text-trello-navy-2 border border-trello-gray-border hover:bg-trello-gray-light active:bg-trello-blue-pale;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-trello-blue border border-transparent hover:bg-trello-blue-pale hover:border-trello-blue-light;
   }
 
   .btn-danger {
-    @apply bg-red-500 text-white hover:bg-red-600;
+    @apply bg-red-600 text-white hover:bg-red-700;
   }
 
+  /* Inputs */
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-trello-blue focus:border-transparent;
+    @apply w-full px-3 border border-trello-gray-border rounded-trello-btn text-base text-trello-navy bg-white placeholder-trello-gray-medium focus:outline-none focus:border-trello-blue transition-shadow duration-200;
+    height: 50px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .input:focus {
+    box-shadow: 0px 0px 0px 2px rgba(12, 102, 228, 0.2);
   }
 
   .input-error {
-    @apply border-red-500 focus:ring-red-500;
+    @apply border-red-600;
   }
 
+  /* Form label */
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-base font-semibold text-trello-navy mb-2;
   }
 
+  /* Card container */
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    @apply bg-white rounded-trello border border-trello-gray-border;
+    box-shadow: rgba(9, 30, 66, 0.13) 0px 1px 1px 0px;
   }
 
+  .card:hover {
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px 0px;
+  }
+
+  /* Links */
   .link {
-    @apply text-trello-blue hover:underline cursor-pointer;
+    @apply text-trello-blue hover:underline cursor-pointer font-medium;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-b-2 border-trello-blue;
+  }
+
+  /* Dropdown */
+  .dropdown {
+    @apply bg-white rounded-trello border border-trello-gray-border;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px 0px;
+  }
+
+  /* Modal */
+  .modal {
+    @apply bg-white rounded-trello;
+    box-shadow: rgba(9, 30, 66, 0.3) 0px 12px 24px 0px;
+  }
+
+  /* Action button (sidebar/card action style) */
+  .btn-action {
+    @apply flex items-center gap-2 w-full px-3 py-2 bg-trello-gray-light rounded-trello-btn hover:bg-trello-gray-border text-trello-navy text-sm font-medium transition-colors;
   }
 }

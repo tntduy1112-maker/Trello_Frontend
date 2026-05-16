@@ -46,7 +46,7 @@ export default function AcceptInvitePage() {
       await invitationService.accept(token);
       setAccepted(true);
       setTimeout(() => {
-        navigate(`/board/${invitation.board.id}`);
+        navigate(`/app/board/${invitation.board.id}`);
       }, 2000);
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Failed to accept invitation');
@@ -90,7 +90,7 @@ export default function AcceptInvitePage() {
 
       setAccepted(true);
       setTimeout(() => {
-        navigate(`/board/${board_id}`);
+        navigate(`/app/board/${board_id}`);
       }, 2000);
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Failed to create account');

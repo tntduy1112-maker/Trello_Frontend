@@ -21,9 +21,9 @@ export default function AddListForm({ boardId }) {
     return (
       <button
         onClick={() => setIsAdding(true)}
-        className="flex items-center gap-2 bg-white/30 hover:bg-white/40 rounded-xl p-3 w-64 md:w-72 flex-shrink-0 text-white font-medium transition-colors"
+        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 rounded-trello p-3 w-64 md:w-72 flex-shrink-0 text-white font-semibold text-sm transition-colors"
       >
-        <Plus size={20} />
+        <Plus size={18} />
         Add another list
       </button>
     );
@@ -32,32 +32,32 @@ export default function AddListForm({ boardId }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-100 rounded-xl p-3 w-64 md:w-72 flex-shrink-0"
+      className="bg-trello-gray-light rounded-trello p-3 w-64 md:w-72 flex-shrink-0"
     >
       <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Enter list title..."
-        className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-3 py-2 text-sm border border-trello-gray-border rounded-trello bg-white text-trello-navy placeholder-trello-gray-medium focus:outline-none focus:border-trello-blue"
+        style={{ height: '40px' }}
+        onFocus={(e) => { e.target.style.boxShadow = '0px 0px 0px 2px rgba(12, 102, 228, 0.2)'; }}
+        onBlur={(e) => { e.target.style.boxShadow = 'none'; }}
         autoFocus
       />
       <div className="flex items-center gap-2 mt-2">
         <button
           type="submit"
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700"
+          className="px-3 py-1.5 bg-trello-blue text-white text-sm font-semibold rounded-trello-btn hover:bg-trello-blue-hover transition-colors"
         >
           Add list
         </button>
         <button
           type="button"
-          onClick={() => {
-            setIsAdding(false);
-            setTitle('');
-          }}
-          className="p-1.5 text-gray-500 hover:text-gray-700"
+          onClick={() => { setIsAdding(false); setTitle(''); }}
+          className="p-1.5 text-trello-gray-neutral hover:text-trello-navy transition-colors"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
       </div>
     </form>

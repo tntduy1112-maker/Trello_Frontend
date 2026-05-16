@@ -5,6 +5,7 @@ import { getCurrentUser } from './redux/slices/authSlice';
 
 import AuthLayout from './components/layout/AuthLayout';
 import AppLayout from './components/layout/AppLayout';
+import LandingPage from './pages/landing/LandingPage';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -36,6 +37,7 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
+
   return children;
 }
 
@@ -43,7 +45,7 @@ function PublicRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/app/home" replace />;
   }
 
   return children;
@@ -117,16 +119,16 @@ function App() {
         {/* Accept Invite (can be public or protected) */}
         <Route path="/invite/:token" element={<AcceptInvitePage />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes — all under /app */}
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <AppLayout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/home" replace />} />
+          <Route index element={<Navigate to="/app/home" replace />} />
           <Route path="home" element={<WorkspacesPage />} />
           <Route path="workspaces/create" element={<CreateWorkspacePage />} />
           <Route path="workspaces/:slug" element={<BoardListPage />} />
@@ -134,6 +136,9 @@ function App() {
           <Route path="board/:boardId" element={<BoardPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
+
+        {/* Landing page */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />

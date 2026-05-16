@@ -9,7 +9,7 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-trello-gray-light flex flex-col">
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex">
         {sidebarOpen && (
