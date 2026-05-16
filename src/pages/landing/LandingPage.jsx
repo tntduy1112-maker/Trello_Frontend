@@ -225,6 +225,84 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── PLATFORM HYPOTHESIS ── */}
+      <section id="hypothesis" className="bg-trello-navy py-[72px] px-6">
+        <div className="max-w-[900px] mx-auto">
+          {/* Pill */}
+          <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.1em] uppercase text-trello-blue-light mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-trello-blue-light flex-shrink-0" />
+            Our Hypothesis
+          </div>
+
+          <h2 className="text-[28px] font-semibold text-white leading-[1.3] mb-2">
+            The bet behind Productcon Lab
+          </h2>
+          <p className="text-sm text-white/45 mb-12">
+            Every product we build is a test of a single idea. Here&apos;s the one we&apos;re proving.
+          </p>
+
+          {/* Hypothesis card */}
+          <div className="bg-white/[0.06] border border-white/10 rounded-lg p-8 mb-0">
+            <div className="flex flex-col gap-3.5">
+              {[
+                { label: 'We believe', text: <>a curated suite of <strong className="text-white font-semibold">AI-built products</strong> under a single brand</> },
+                { label: 'For', text: <>teams who need <strong className="text-white font-semibold">lightweight, purpose-built tools</strong> without enterprise complexity</> },
+                { label: 'Will result in', text: <>proof that <strong className="text-white font-semibold">AI-assisted engineering</strong> can produce real, production-quality software at speed</> },
+                { label: "We'll know when", text: <>each product <strong className="text-white font-semibold">ships to production</strong>, acquires real users, and passes the same quality gates — built in weeks, not months</> },
+              ].map(({ label, text }) => (
+                <div key={label} className="flex gap-3 text-[15px] leading-[1.55] sm:flex-row flex-col">
+                  <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-trello-blue-light whitespace-nowrap pt-0.5 min-w-[110px]">
+                    {label}
+                  </span>
+                  <span className="text-white/80">{text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="h-px bg-white/[0.08] my-6" />
+
+            <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-white/30 mb-4">
+              How we&apos;re measuring it
+            </p>
+
+            {/* Metrics grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { value: '1', label: 'Product in production', status: 'achieved', statusText: 'Achieved' },
+                { value: '~6 wks', label: 'Zero to production', status: 'achieved', statusText: 'Achieved' },
+                { value: '100%', label: 'AI-assisted build', status: 'achieved', statusText: 'Validated' },
+                { value: '—', label: 'Real users onboarded', status: 'in-progress', statusText: 'In progress' },
+              ].map(({ value, label, status, statusText }) => (
+                <div key={label} className="relative bg-white/5 border border-white/[0.09] rounded-md overflow-hidden">
+                  <div
+                    className="absolute top-0 left-0 right-0 h-0.5"
+                    style={{ background: status === 'achieved' ? '#22C55E' : '#0C66E4' }}
+                  />
+                  <div className="p-5">
+                  <div className="text-[22px] font-bold text-white leading-none mb-1">{value}</div>
+                  <div className="text-xs text-white/45 mb-3">{label}</div>
+                  <span
+                    className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      status === 'achieved'
+                        ? 'bg-green-400/15 text-green-300'
+                        : 'bg-trello-blue/20 text-trello-blue-light'
+                    }`}
+                  >
+                    <span
+                      className={`w-1 h-1 rounded-full flex-shrink-0 ${
+                        status === 'achieved' ? 'bg-green-300' : 'bg-trello-blue-light'
+                      }`}
+                    />
+                    {statusText}
+                  </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SURVEY CTA ── */}
       <section id="survey" className="bg-trello-navy py-16 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
