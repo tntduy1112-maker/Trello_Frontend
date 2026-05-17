@@ -156,20 +156,12 @@ export default function LandingNav() {
             <span className="hidden sm:inline">Go to app</span>
           </Link>
         ) : (
-          <>
-            <Link
-              to="/login"
-              className="px-3 py-2 text-sm font-medium text-trello-navy-2 hover:bg-trello-gray-light rounded-trello transition-colors hidden sm:block"
-            >
-              Sign in
-            </Link>
-            <a
-              href="#survey"
-              className="btn btn-primary text-sm py-2 px-4 min-h-0"
-            >
-              Start building →
-            </a>
-          </>
+          <a
+            href="#survey"
+            className="btn btn-primary text-sm py-2 px-4 min-h-0"
+          >
+            Start building →
+          </a>
         )}
       </div>
     </nav>
