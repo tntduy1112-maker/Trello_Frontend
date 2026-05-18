@@ -14,21 +14,21 @@ const PRODUCTS = [
     loginRequired: true,
   },
   {
-    icon: '📊',
-    name: 'BudgetFlow',
-    type: 'Finance · Expense tracking',
+    icon: '📖',
+    name: 'DiaryFlow',
+    type: 'Personal · Digital journal',
     status: 'wip',
-    desc: 'Track team expenses, set budgets per project, approve requests, and export reports. Built for small teams that outgrow spreadsheets.',
+    desc: 'A private digital diary with AI-assisted reflections, mood tracking, rich-text entries, and timeline browsing.',
     tags: ['Go + Gin', 'Next.js', 'PostgreSQL'],
     href: null,
   },
   {
-    icon: '🤝',
-    name: 'HireFlow',
-    type: 'HR · Recruitment pipeline',
+    icon: '📊',
+    name: 'BudgetFlow',
+    type: 'Finance · Expense tracking',
     status: 'planned',
-    desc: 'Manage job applications, track candidates through stages, schedule interviews, and collaborate with hiring managers.',
-    tags: ['Go + Gin', 'React', 'PostgreSQL'],
+    desc: 'Track team expenses, set budgets per project, approve requests, and export reports. Built for small teams that outgrow spreadsheets.',
+    tags: ['Go + Gin', 'Next.js', 'PostgreSQL'],
     href: null,
   },
 ];
@@ -420,7 +420,7 @@ export default function LandingPage() {
 
             <div className="flex gap-12 flex-wrap">
               {[
-                { title: 'Products', links: ['TaskFlow', 'BudgetFlow', 'HireFlow'] },
+                { title: 'Products', links: ['TaskFlow', 'DiaryFlow', 'BudgetFlow'] },
                 { title: 'Build', links: ['Product intake survey', 'How it works', 'Development guide'] },
                 { title: 'Account', links: ['Sign in', 'Create account'] },
               ].map((group) => (
