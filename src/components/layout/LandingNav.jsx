@@ -233,12 +233,12 @@ export default function LandingNav() {
             <span className="hidden sm:inline">Go to app</span>
           </Link>
         ) : (
-          <a
-            href="#survey"
+          <Link
+            to="/login"
             className="btn btn-primary text-sm py-2 px-4 min-h-0"
           >
-            Start building →
-          </a>
+            Login
+          </Link>
         )}
       </div>
     </nav>
