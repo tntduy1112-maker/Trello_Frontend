@@ -940,11 +940,24 @@ function renderSummary() {
   mount.appendChild(card);
 
   card.querySelector('#btn-copy').addEventListener('click', () => {
-    navigator.clipboard.writeText(output).then(() => {
+    const showSuccess = () => {
       const s = card.querySelector('#copy-success');
       s.classList.add('show');
       setTimeout(() => s.classList.remove('show'), 2000);
-    });
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(output).then(showSuccess);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = output;
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showSuccess();
+    }
   });
   card.querySelector('#btn-restart').addEventListener('click', () => {
     if (confirm('Start the survey over? All answers will be cleared.')) {
