@@ -422,7 +422,6 @@ export default function LandingPage() {
               {[
                 { title: 'Products', links: ['TaskFlow', 'DiaryFlow', 'BudgetFlow'] },
                 { title: 'Build', links: ['Product intake survey', 'How it works', 'Development guide'] },
-                { title: 'Account', links: ['Sign in', 'Create account'] },
               ].map((group) => (
                 <div key={group.title}>
                   <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">{group.title}</h4>
