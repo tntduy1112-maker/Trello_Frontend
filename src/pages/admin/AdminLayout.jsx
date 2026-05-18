@@ -20,10 +20,13 @@ export function useIsAdmin() {
 }
 
 export default function AdminLayout() {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isLoading, user } = useSelector((state) => state.auth);
   const isAdmin = useIsAdmin();
 
-  if (isLoading) {
+  // Wait for token validation to complete before making auth decisions.
+  // isLoading starts true when a token exists in localStorage (see authSlice initialState).
+  const tokenPending = isLoading || (!!localStorage.getItem('accessToken') && !user && !isAuthenticated);
+  if (tokenPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-trello-blue" />
