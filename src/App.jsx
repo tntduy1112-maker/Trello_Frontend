@@ -6,6 +6,11 @@ import { getCurrentUser } from './redux/slices/authSlice';
 import AuthLayout from './components/layout/AuthLayout';
 import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/landing/LandingPage';
+import PricingPage from './pages/landing/PricingPage';
+import AboutPage from './pages/landing/AboutPage';
+import SolutionPage from './pages/solutions/SolutionPage';
+import BlogPage from './pages/resources/BlogPage';
+import ChangelogPage from './pages/resources/ChangelogPage';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -21,6 +26,11 @@ import WorkspaceSettingsPage from './pages/workspaces/WorkspaceSettingsPage';
 import BoardPage from './pages/boards/BoardPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import AcceptInvitePage from './pages/invitations/AcceptInvitePage';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminWorkspacesPage from './pages/admin/AdminWorkspacesPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminSubmissionsPage from './pages/admin/AdminSubmissionsPage';
+import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
@@ -137,8 +147,22 @@ function App() {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
-        {/* Landing page */}
+        {/* Admin portal */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="/admin/workspaces" replace />} />
+          <Route path="workspaces" element={<AdminWorkspacesPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="submissions" element={<AdminSubmissionsPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
+        </Route>
+
+        {/* Landing pages */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/solutions/:slug" element={<SolutionPage />} />
+        <Route path="/resources/blog" element={<BlogPage />} />
+        <Route path="/resources/changelog" element={<ChangelogPage />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />

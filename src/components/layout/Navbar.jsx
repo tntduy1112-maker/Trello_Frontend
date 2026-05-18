@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Kanban, Bell, Search, Plus, LogOut, Settings, ChevronDown, HelpCircle, Menu } from 'lucide-react';
+import { Kanban, Bell, Search, Plus, LogOut, Settings, ChevronDown, HelpCircle, Menu, Shield } from 'lucide-react';
 import { logout } from '../../redux/slices/authSlice';
 import NotificationDropdown from '../ui/NotificationDropdown';
 import HelpModal from '../ui/HelpModal';
+import { useIsAdmin } from '../../pages/admin/AdminLayout';
 
 export default function Navbar({ onMenuClick }) {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export default function Navbar({ onMenuClick }) {
   };
 
   const avatarInitial = user?.full_name?.charAt(0).toUpperCase() || '?';
+  const isAdmin = useIsAdmin();
 
   return (
     <nav className="bg-white border-b border-trello-gray-border h-navbar flex items-center px-4 justify-between flex-shrink-0">
@@ -137,6 +139,16 @@ export default function Navbar({ onMenuClick }) {
                 <Settings className="w-4 h-4 text-trello-gray-neutral" />
                 <span>Profile & Settings</span>
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-trello-navy-2 hover:bg-trello-gray-light transition-colors"
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  <Shield className="w-4 h-4 text-trello-blue" />
+                  <span>Admin portal</span>
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2 text-sm text-trello-navy-2 hover:bg-trello-gray-light transition-colors"
