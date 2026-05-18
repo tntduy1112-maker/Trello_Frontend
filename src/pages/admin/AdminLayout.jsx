@@ -2,7 +2,7 @@ import { Navigate, Outlet, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Kanban, Users, LayoutGrid, FileText, Settings, ChevronRight } from 'lucide-react';
 
-const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || 'tntduy1112@gmail.com')
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || 'tntduy1112@gmail.com,test@trello-dev.local')
   .split(',')
   .map((e) => e.trim().toLowerCase());
 
